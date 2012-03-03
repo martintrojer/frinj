@@ -110,9 +110,9 @@
 (def fj* fj-mul)
 (def fj_ fj-div)           ;; can't find a better character for div!
 (def fj** fj-int-pow)
-(def f= fj-equal?)
-(def f< fj-less)
-(def f> fj-greater)
-(defn f<= [& fjs] (or (apply fj-equal? fjs) (apply fj-less fjs)))
-(defn f>= [& fjs] (or (apply fj-equal? fjs) (apply fj-greater fjs)))
+(def fj= fj-equal?)
+(def fj< fj-less)
+(def fj> fj-greater)
+(defn fj<= [& fjs] (or (apply fj-equal? fjs) (apply fj-less fjs)))
+(defn fj>= [& fjs] (or (apply fj-equal? fjs) (apply fj-greater fjs)))
 

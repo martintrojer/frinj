@@ -55,7 +55,7 @@
   (is (= (fjv. 1286492400 {"s" 1})
          (fj :#2010-10-08)))
 
-  (is (f<= (fj :#now) (fj :#now)))
+  (is (fj<= (fj :#now) (fj :#now)))
   )
 
 (deftest test-to

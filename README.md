@@ -20,7 +20,7 @@ $ lein new frinj-example
 Add the following line to the dependency list in `frinj-example/project.clj`:
 
 ```clj
-(defproject example "1.0"
+(defproject frinj-example "1.0"
   :dependencies [[org.clojure/clojure "1.3.0"]
                  [frinj "0.1.1"]])
 ```
@@ -28,6 +28,7 @@ Add the following line to the dependency list in `frinj-example/project.clj`:
 Pull the dependencies and start the REPL
 
 ```sh
+$ cd frinj-example
 $ lein deps
 $ lein repl
 ```
@@ -35,7 +36,7 @@ $ lein repl
 Reference and initialize the Frinj calculator
 
 ```clj
-user=> (use 'frinj.calc)
+user=> (use 'frinj.calc)      ;; (use 'frinj.calc 'frinj.core) if you want access to core functions aswell
 user=> (frinj-init!)          ;; this will reset all units to the defaults
 ```
 
