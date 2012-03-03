@@ -4,7 +4,7 @@ Frinj is a practical unit-of-measure calculator DSL for Clojure.
 
 Key features;
 
-* Tracks units of measure allowing you to mix units of measure transparently
+* Tracks units of measure through all calculations allowing you to mix units of measure transparently
 * Comes with a huge database of units and conversion factors
 * Inspired by the Frink project (http://futureboy.us/frinkdocs/)
 * Tries to combine Frink's fluent calculation style with idiomatic Clojure

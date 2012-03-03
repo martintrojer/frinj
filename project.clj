@@ -1,4 +1,4 @@
 (defproject frinj "0.1.0"
-  :description "Frinj the unit-of-measure calculator Clojure DSL"
+  :description "Practical unit-of-measure calculator DSL for Clojure"
   :url "https://github.com/martintrojer/frinj"
   :dependencies [[org.clojure/clojure "1.3.0"]])

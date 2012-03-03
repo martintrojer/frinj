@@ -63,4 +63,5 @@
   (is (= (fjv. 1/2 {})           (to one 2)))
   (is (= (fjv. 50/127 {})        (to (fjv. 1 {"cm" 1}) "inch")))
   (is (= (fjv. 50/127 {})        (to (fjv. 1 {"cm" 1}) :inch)))
+  (is (= (fjv. 127/500 {})       (to (fjv. 1 {"inch" 1}) 10 :cm)))
   )

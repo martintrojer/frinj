@@ -543,8 +543,3 @@
 ;; Unbelievable. The energy in a teaspoon of water, if we could extract it, is equal to burning
 ;; more than 3 million gallons of gasoline.
 
-
-
-
-
-
