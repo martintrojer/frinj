@@ -22,7 +22,7 @@ Add the following line to the dependency list in `frinj-example/project.clj`:
 ```clj
 (defproject example "1.0"
   :dependencies [[org.clojure/clojure "1.3.0"]
-                 [frinj "0.1.0"]])
+                 [frinj "0.1.1"]])
 ```
 
 Pull the dependencies and start the REPL
@@ -40,6 +40,8 @@ user=> (frinj-init!)          ;; this will reset all units to the defaults
 ```
 
 Start calculating! See the [example calculations](https://github.com/martintrojer/frinj/blob/master/src/frinj/examples.clj "example calculations") for ideas...
+
+See [wiki](https://github.com/martintrojer/frinj/wiki) from more info.
 
 ## License
 
