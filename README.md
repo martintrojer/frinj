@@ -22,7 +22,7 @@ Add the following line to the dependency list in `frinj-example/project.clj`:
 ```clj
 (defproject frinj-example "1.0"
   :dependencies [[org.clojure/clojure "1.3.0"]
-                 [frinj "0.1.1"]])
+                 [frinj "0.1.2"]])
 ```
 
 Pull the dependencies and start the REPL
