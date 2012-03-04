@@ -198,7 +198,7 @@
         false
         (recur rst)))))
 
-(defn fj-less
+(defn fj-less?
   [& fjs]
   (loop [[fst snd & rst] fjs]
     (if (or (nil? fst) (nil? snd))
@@ -207,7 +207,7 @@
         false
         (recur (into rst [snd]))))))
 
-(defn fj-greater
+(defn fj-greater?
   [& fjs]
   (loop [[fst snd & rst] fjs]
     (if (or (nil? fst) (nil? snd))

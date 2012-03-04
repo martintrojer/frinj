@@ -7,6 +7,7 @@
 
 ;; All these examples are taken from Frink's genius Sample Calculation page
 ;; http://futureboy.us/frinkdocs/#SampleCalculations
+;; Alan Eliasen deserves all the praise for the humor
 
 (ns frinj.examples
   (:use [frinj.core])

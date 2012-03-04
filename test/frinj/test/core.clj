@@ -150,17 +150,17 @@
   )
 
 (deftest less
-  (is (fj-less one))
-  (is (fj-less zero one))
-  (is (fj-less zero one (fjv. 2 {})))  
-  (is (not (fj-less one one)))
-  (is (not (fj-less one zero)))
+  (is (fj-less? one))
+  (is (fj-less? zero one))
+  (is (fj-less? zero one (fjv. 2 {})))  
+  (is (not (fj-less? one one)))
+  (is (not (fj-less? one zero)))
   )
 
 (deftest greater
-  (is (fj-greater one))
-  (is (fj-greater one zero))
-  (is (fj-greater (fjv. 2 {}) one zero))  
-  (is (not (fj-greater one one)))
-  (is (not (fj-greater zero one)))
+  (is (fj-greater? one))
+  (is (fj-greater? one zero))
+  (is (fj-greater? (fjv. 2 {}) one zero))  
+  (is (not (fj-greater? one one)))
+  (is (not (fj-greater? zero one)))
   )
