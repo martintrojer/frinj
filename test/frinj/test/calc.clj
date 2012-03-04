@@ -56,6 +56,8 @@
          (fj :#2010-10-08)))
 
   (is (fj<= (fj :#now) (fj :#now)))
+
+  (is (= (fjv. 1/2 {})           (fj 1 :per 2)))
   )
 
 (deftest test-to

@@ -6,7 +6,8 @@
 ;;  the terms of this license.
 ;;  You must not remove this notice, or any other, from this software.
 
-;; taken from Frink's sample calculations page
+;; All these examples are taken from Frink's genius Sample Calculation page
+;; http://futureboy.us/frinkdocs/#SampleCalculations
 
 (ns frinj.examples
   (:use [frinj.core])
