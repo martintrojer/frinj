@@ -16,17 +16,18 @@
 
 (defn- calc-test-fixture [f]
   (reset-states!)
-  (swap! prefixes #(assoc % "d" (fjv. 1/10 {})))
-  (swap! prefixes #(assoc % "c" (fjv. 1/100 {})))
-  (swap! standalone-prefixes #(assoc % "kilo" (fjv. 1000 {})))
-  (swap! prefixes #(assoc % "k" (fjv. 1000 {})))
-  (swap! units #(assoc % "m" (fjv. 1 {})))
-  (swap! units #(assoc % "s" (fjv. 1 {})))
-  (swap! units #(assoc % "pi" (fjv. 3.14 {})))
-  (swap! units #(assoc % "inch" (fjv. 127/5000 {"m" 1})))
-  (swap! fundamental-units #(assoc % {"m" 1} (fjv. 1 {})))
-  (swap! fundamentals #(conj % "m"))
-  (swap! fundamentals #(conj % "s"))
+  (dosync
+   (alter prefixes #(assoc % "d" (fjv. 1/10 {})))
+   (alter prefixes #(assoc % "c" (fjv. 1/100 {})))
+   (alter standalone-prefixes #(assoc % "kilo" (fjv. 1000 {})))
+   (alter prefixes #(assoc % "k" (fjv. 1000 {})))
+   (alter units #(assoc % "m" (fjv. 1 {})))
+   (alter units #(assoc % "s" (fjv. 1 {})))
+   (alter units #(assoc % "pi" (fjv. 3.14 {})))
+   (alter units #(assoc % "inch" (fjv. 127/5000 {"m" 1})))
+   (alter fundamental-units #(assoc % {"m" 1} (fjv. 1 {})))
+   (alter fundamentals #(conj % "m"))
+   (alter fundamentals #(conj % "s")))
   (f))
 
 (use-fixtures :once calc-test-fixture)
@@ -46,11 +47,14 @@
          (fj :m :per 2 :per :s)))
 
   (is (= (fjv. 50/127 {})        (fj :cm :to :inch)))
+  (is (= one                     (fj :cm :to :cm)))
+  (is (= one                     (fj :cm :per :cm)))
   (is (thrown? Exception         (fj :cm :to)))
   (is (thrown? Exception         (fj :cm :to :to)))
   (is (thrown? Exception         (fj :cm :to 1)))
   
   (is (= (fjv. 3.14 {"s" -1})    (fj :pi :per :s)))
+  (is (thrown? Exception         (fj :cm :to :s)))
 
   (is (= (fjv. 1286492400 {"s" 1})
          (fj :#2010-10-08)))

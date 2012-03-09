@@ -35,8 +35,8 @@
           (= :to fst) (if (and (not (nil? snd)) (or (keyword? snd) (string? snd)))
                         (let [tos (to-unit-str snd)]
                           (if-not (= tos "to")
-                            (recur acc (to-unit-str snd) rst)
-                            (throw (Exception. "invalid to target"))))                        
+                            (recur acc tos rst)
+                            (throw (Exception. "invalid to target"))))
                         (throw (Exception. "invalid to target")))
           (string? fst) (recur (conj acc [:unit fst]) to r)
           (keyword? fst) (let [name (to-unit-str fst)]
@@ -90,7 +90,7 @@
   (reset-states!)
   (with-open [rdr (clojure.java.io/reader unit-txt-file)]
     (doseq [line (line-seq rdr)]
-      (-> line (tokenize) (parse!)))))
+      (-> line tokenize parse!))))
 
 ;; =================================================================
 

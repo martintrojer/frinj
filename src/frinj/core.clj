@@ -14,22 +14,21 @@
 ;; =================================================================
 ;; Core unit states, and helper functions
 
-;; TODO; refs + dosync?
-(def units (atom {}))
-(def prefixes (atom {}))
-(def standalone-prefixes (atom {}))
-(def fundamental-units (atom {}))
-(def fundamentals (atom #{}))
+(def units (ref {}))
+(def prefixes (ref {}))
+(def standalone-prefixes (ref {}))
+(def fundamental-units (ref {}))
+(def fundamentals (ref #{}))
 
 (defn reset-states!
-  "Total reset of the core unit states"
+  "Total reset of the core unit states (to empty)"
   []
-  (reset! units {})
-  (reset! prefixes {})
-  (reset! standalone-prefixes {})
-  (reset! fundamental-units {})
-  (reset! fundamentals #{})
-  )
+  (dosync 
+   (ref-set units {})
+   (ref-set prefixes {})
+   (ref-set standalone-prefixes {})
+   (ref-set fundamental-units {})
+   (ref-set fundamentals #{})))
 
 (defn to-unit-str
   "Covert to a unit string"
@@ -40,12 +39,13 @@
 
 (defn add-with-plurals!
   "Adds a unit to the state (and it's potential plural)"
-  [atm name fj]
-  (let [name (to-unit-str name)]    
-    (swap! atm #(assoc % name fj))
-    (when-not (or (= \s (last name)) (= 1 (.length name)))
-      (swap! atm #(assoc % (str name "s") fj)))
-    fj))
+  [rf name fj]
+  (let [name (to-unit-str name)]
+    (dosync 
+     (alter rf #(assoc % name fj))
+     (when-not (or (= \s (last name)) (= 1 (.length name)))
+       (alter rf #(assoc % (str name "s") fj)))
+     fj)))
 
 (defn add-unit!
   "Adds a unit to the state"
@@ -69,11 +69,12 @@
          nstandalone-prefixes :standalone-prefixes
          nfundamental-units :fundamental-units
          nfundamentals :fundamentals} (read-string data)]
-    (reset! units nunits)
-    (reset! prefixes nprefixes)
-    (reset! standalone-prefixes nstandalone-prefixes)
-    (reset! fundamental-units nfundamental-units)
-    (reset! fundamentals nfundamentals)))
+    (dosync
+     (ref-set units nunits)
+     (ref-set prefixes nprefixes)
+     (ref-set standalone-prefixes nstandalone-prefixes)
+     (ref-set fundamental-units nfundamental-units)
+     (ref-set fundamentals nfundamentals))))
 
 ;; =================================================================
 ;; Core units of measure types and functions
@@ -122,6 +123,7 @@
   (fjv. (:v fj) (clean-us (:u fj))))
 
 (defn- to-fjs
+  "create fjvs from numbers"
   [fjs]
   (map #(if (= frinj.core.fjv (class %)) % (fjv. % {})) fjs))
 
@@ -181,7 +183,7 @@
   (fj-div 1 fj))
 
 (defn fj-int-pow
-  "Power operator, only positive integers!"
+  "Power operator, only integers!"
   [fj exp]
   (if (integer? exp)
     (if (pos? exp)

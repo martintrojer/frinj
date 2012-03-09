@@ -36,12 +36,12 @@
    [uname]
    (when @*debug*(println "resolve" uname))
    (if-let [fj (get @units uname)]
-     [(fjv. 1 {}) uname]     ;; if total match, just return the unit
+     [one uname]     ;; if name = unit, just return the unit
      (if-let [pfx (->> (filter #(.startsWith uname %) (all-prefix-names))
                        (sort-by #(.length %))
-                       (reverse)
+                       reverse
                        (filter #(contains? @units (.substring uname (.length %))))
-                       (first))]
+                       first)]
        [(lookup-prefix pfx) (.substring uname (.length pfx))]
        ;; no match, return the uname
        [one uname])))
@@ -58,7 +58,7 @@
                         (fj-int-pow fact v))
                 (fj-div (fjv. (:v acc) (add-units (:u acc) {u v}))
                         (fj-int-pow fact (Math/abs v))))))
-          (fjv. 1 {}) u))
+          one u))
 
 ;; =================================================================
 ;; unit normaliztion
@@ -92,7 +92,7 @@
 ;; unit conversion
 
 (defn convert
-  "Converts a fjv to a given unit, will resolve and normalize. Will reverse if units mirrored"
+  "Converts a fjv to a given unit, will resolve and normalize. Will reverse if units 'mirrored'"
   [fj u]
   (when @*debug* (println "convert" fj u))
   (let [nf (resolve-and-normalize-units (:u fj))
@@ -103,6 +103,5 @@
       (fj-div nfj nu)
       (if (= (:u (fj-inverse nfj)) (:u nu))
         (fj-div (fj-inverse nfj) nu)
-        (throw (Exception. "cannot convert to a different unit")))))
-  )
+        (throw (Exception. "cannot convert to a different unit"))))))
 

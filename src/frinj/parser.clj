@@ -93,7 +93,7 @@
 ;; (count a)
 
 ;; =================================================================
-;; pasrer
+;; parser
 
 (defn eat-number
   "Parse a set of tokens extracing a number in finite set of formats (as seen in frink's unit.txt file"
@@ -198,15 +198,15 @@
                       rfj (resolve-and-normalize-units (:u fj))
                       nfj (fjv. (* (:v fj) (:v rfj)) (:u rfj))]
                   (when @*trace* (println v1 ":-" nfj))
-                  (swap! prefixes #(assoc % v1 nfj))
+                  (alter prefixes #(assoc % v1 nfj))
                   (recur [] rst))
 
                 ;; fundamentals
                 (and (= t1 :name) (= t2 :fundamental) (= t3 :unit))
                 (let [u {v3 1}]
-                  (swap! fundamental-units #(assoc % u v1))
-                  (swap! fundamentals #(conj % v3))
-                  (swap! units #(assoc % v3 (fjv. 1 {})))
+                  (alter fundamental-units #(assoc % u v1))
+                  (alter fundamentals #(conj % v3))
+                  (alter units #(assoc % v3 one))
                   (when @*trace* (println v1 "=!=" u))
                   (recur [] rst))
 
@@ -215,7 +215,7 @@
                 (let [acc (map (fn [[t v]] [(if (= t :name) :unit t) v]) acc)
                       [u _ _] (eat-units acc)
                       rv (normalize-units (fjv. 1 u))]
-                  (swap! fundamental-units #(assoc % (:u rv) v2))
+                  (alter fundamental-units #(assoc % (:u rv) v2))
                   (when @*trace* (println v2 "|||" (:u rv)))
                   (recur [] (into rst [thrd])))
                 
@@ -242,5 +242,6 @@
                 
                 :else (recur (conj acc fst) r))))]
 
-    (do-parse [] toks)))
+    (dosync 
+     (do-parse [] toks))))
 
