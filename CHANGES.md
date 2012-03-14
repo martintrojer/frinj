@@ -7,6 +7,11 @@ Features
 * Live unit feeds
 * frinj.repl namespace
 
+Fixes
+---
+
+* bug in fj-equal?
+
 0.1.2
 ====
 

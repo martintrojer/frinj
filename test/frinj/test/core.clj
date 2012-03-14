@@ -147,6 +147,10 @@
   (is (fj-equal? one one one))
   (is (not (fj-equal? one zero)))
   (is (not (fj-equal? one one zero)))
+  (is (fj-equal? (fjv. 1 {:m 1}) (fjv. 1 {:m 1})))
+  (is (fj-equal? (fjv. 1.1 {:m 1}) (fjv. 1.1 {:m 1})))
+  (is (fj-equal? (fjv. 1/2 {:s -1 :m 1}) (fjv. 1/2 {:m 1 :s -1})))
+  (is (fj-equal? (fjv. 1 {:m 1}) (fjv. 1 {:m 1 :s 0})))
   )
 
 (deftest less

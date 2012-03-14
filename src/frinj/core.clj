@@ -196,7 +196,7 @@
   (loop [[fst & rst] fjs]
     (if (nil? fst)
       true
-      (if-not (= 0 (:v (fj-sub fst-fjv fst)))
+      (if-not (zero? (:v (fj-sub fst-fjv fst)))
         false
         (recur rst)))))
 
