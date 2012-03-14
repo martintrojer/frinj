@@ -90,7 +90,7 @@
   (reset-states!)
   (with-open [rdr (clojure.java.io/reader unit-txt-file)]
     (doseq [line (line-seq rdr)]
-      (-> line tokenize parse!))))
+      (-> line (tokenize) parse!))))
 
 ;; =================================================================
 

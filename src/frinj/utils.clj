@@ -86,7 +86,7 @@
 (defn resolve-and-normalize-units
   "Resolve all units with prefixes, and normalized the result"
   [u]
-  (-> u (resolve-unit-prefixes) (normalize-units)))
+  (-> u resolve-unit-prefixes normalize-units))
 
 ;; =================================================================
 ;; unit conversion

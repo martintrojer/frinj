@@ -1,3 +1,12 @@
+0.1.3
+====
+
+Features
+---
+
+* Live unit feeds
+* frinj.repl namespace
+
 0.1.2
 ====
 

@@ -22,7 +22,7 @@ Add the following line to the dependency list in `frinj-example/project.clj`:
 ```clj
 (defproject frinj-example "1.0"
   :dependencies [[org.clojure/clojure "1.3.0"]
-                 [frinj "0.1.2"]])
+                 [frinj "0.1.3"]])
 ```
 
 Pull the dependencies and start the REPL
@@ -36,11 +36,12 @@ $ lein repl
 Reference and initialize the Frinj calculator
 
 ```clj
-user=> (use 'frinj.calc)      ;; (use 'frinj.calc 'frinj.core) if you want access to core functions aswell
-user=> (frinj-init!)          ;; this will reset all units to the defaults
+user=> (use 'frinj.repl)
 ```
 
 Start calculating! See the [example calculations](https://github.com/martintrojer/frinj/blob/master/src/frinj/examples.clj "example calculations") for ideas...
+
+Frinj also support live units for currencies, precious metals etc, see [simple examples](https://gist.github.com/2036735)
 
 See [wiki](https://github.com/martintrojer/frinj/wiki) from more info.
 
