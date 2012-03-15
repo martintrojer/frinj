@@ -153,6 +153,14 @@
   (is (fj-equal? (fjv. 1 {:m 1}) (fjv. 1 {:m 1 :s 0})))
   )
 
+(deftest not-equal
+  (is (not (fj-not-equal? one)))
+  (is (not (fj-not-equal? one one)))
+  (is (not (fj-not-equal? one one one)))
+  (is (fj-not-equal? one zero))
+  (is (fj-not-equal? one one zero))
+  )
+
 (deftest less
   (is (fj-less? one))
   (is (fj-less? zero one))
@@ -167,4 +175,22 @@
   (is (fj-greater? (fjv. 2 {}) one zero))  
   (is (not (fj-greater? one one)))
   (is (not (fj-greater? zero one)))
+  )
+
+(deftest less-or-equal
+  (is (fj-less-or-equal? one))
+  (is (fj-less-or-equal? one one))
+  (is (fj-less-or-equal? zero one))
+  (is (fj-less-or-equal? zero one (fjv. 2 {})))  
+  (is (not (fj-less-or-equal? one zero)))
+  (is (fj-less-or-equal? (fjv. 1.1 {:m 1}) (fjv. 1.1 {:m 1})))
+  )
+
+(deftest greater-or-equal
+  (is (fj-greater-or-equal? one))
+  (is (fj-greater-or-equal? one zero))
+  (is (fj-greater-or-equal? (fjv. 2 {}) one zero))  
+  (is (fj-greater-or-equal? one one))
+  (is (not (fj-greater-or-equal? zero one)))
+  (is (fj-greater-or-equal? (fjv. 1.1 {:m 1}) (fjv. 1.1 {:m 1})))
   )

@@ -75,7 +75,7 @@
                              first
                              (re-seq #"[0-9\.]+")
                              second
-                            read-string))
+                             read-string))
         rates (->> "http://themoneyconverter.com/rss-feed/USD/rss.xml"
                    fetch-url
                    zip-str
@@ -119,7 +119,7 @@
                    fetch-url
                    zip-str
                    children
-                   first
+                   first            ;; TODO; not good, filter for usd here
                    :content)]
 
     (reduce (fn [acc r] (assoc acc (get-target r) [(get-rate r) (fj :dollar :per (get-weight r))]))

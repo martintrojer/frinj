@@ -200,6 +200,10 @@
         false
         (recur rst)))))
 
+(defn fj-not-equal?
+  [& fjs]
+  (not (apply fj-equal? fjs)))
+
 (defn fj-less?
   [& fjs]
   (loop [[fst snd & rst] fjs]
@@ -217,3 +221,9 @@
       (if-not (> 0 (:v (fj-sub snd fst)))
         false
         (recur (into rst [snd]))))))
+
+(defn fj-less-or-equal? [& fjs]
+  (or (apply fj-equal? fjs) (apply fj-less? fjs)))
+
+(defn fj-greater-or-equal? [& fjs]
+  (or (apply fj-equal? fjs) (apply fj-greater? fjs)))

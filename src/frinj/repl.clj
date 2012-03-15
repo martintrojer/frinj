@@ -7,6 +7,7 @@
 ;;  You must not remove this notice, or any other, from this software.
 
 (ns frinj.repl
+  (:require [frinj.infix])
   (:use [frinj.feeds]))
 
 (defn immigrate
@@ -22,7 +23,7 @@
          (intern *ns* sym (var-get var))
          (intern *ns* sym))))))
 
-(immigrate 'frinj.core 'frinj.calc)
+(immigrate 'frinj.core 'frinj.calc 'frinj.infix)
 
 (defn frinj-reset! []
   (frinj-init!)
