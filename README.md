@@ -6,7 +6,7 @@ Key features;
 
 * Tracks units of measure through all calculations allowing you to mix units of measure transparently
 * Comes with a huge database of units and conversion factors
-* Supports live unit feeds like current conversion
+* Supports live unit feeds like currency conversion
 * Inspired by the Frink project (http://futureboy.us/frinkdocs/)
 * Tries to combine Frink's fluent calculation style with idiomatic Clojure
 * Supports infix calculation style (in 0.1.4-SNAPSHOT)
