@@ -10,3 +10,4 @@ pom.xml
 *.png
 *~
 
+/.lein-repl-history

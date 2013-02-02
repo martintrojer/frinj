@@ -34,4 +34,16 @@
 
 (frinj-reset!)
 
+(println "Welcome to Frinj!")
 
+(defn override-operators! []
+  (eval '(do
+           (def + fj+)
+           (def - fj-)
+           (def * fj*)
+           (def / fj_)
+           (def < fj<)
+           (def > fj>)
+           (def <= fj<=)
+           (def >= fj>=)))
+  )
