@@ -1,3 +1,11 @@
+0.1.4
+===
+
+Features
+---
+
+* Infix operator calculations (with $= macro)
+
 0.1.3
 ====
 
