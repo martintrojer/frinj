@@ -46,4 +46,6 @@
            (def > fj>)
            (def <= fj<=)
            (def >= fj>=)))
-  )
+
+  (defmethod clojure.core/print-method frinj.core.fjv [x writer]
+    (.write writer (str x))))
