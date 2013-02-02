@@ -8,7 +8,7 @@
 
 (ns frinj.core)
 
-(def ^{:dynamic true} *debug* (atom false))
+(def ^:dynamic *debug* (atom false))
 (defn enable-debug! [] (reset! *debug* true))
 
 ;; =================================================================
@@ -23,7 +23,7 @@
 (defn reset-states!
   "Total reset of the core unit states (to empty)"
   []
-  (dosync 
+  (dosync
    (ref-set units {})
    (ref-set prefixes {})
    (ref-set standalone-prefixes {})
@@ -41,7 +41,7 @@
   "Adds a unit to the state (and it's potential plural)"
   [rf name fj]
   (let [name (to-unit-str name)]
-    (dosync 
+    (dosync
      (alter rf #(assoc % name fj))
      (when-not (or (= \s (last name)) (= 1 (.length name)))
        (alter rf #(assoc % (str name "s") fj)))
@@ -93,7 +93,7 @@
   Object
   (toString [this]
     (str (if (ratio? v) (str v " (approx. " (double v) ")") v) " "
-         (str 
+         (str
           (reduce (fn [acc [k v]] (str acc (if (= v 1) (str k " ") (str k "^" v " "))))
                   "" (clean-us u))
           "[" (get @fundamental-units (clean-us u) "") "]"))))
@@ -108,7 +108,7 @@
     (let [m (first us)]
       (when @*debug* (println "add-units" acc m us))
       (if-not (empty? us)
-        (recur       
+        (recur
          (reduce (fn [acc [k v]]
                    (if-let [av (get acc k)]
                      (assoc acc k (+ av v))
@@ -129,7 +129,7 @@
 
 (defn- add-sub
   [op fjs]
-  (let [fjs (to-fjs fjs)]    
+  (let [fjs (to-fjs fjs)]
     (when-let [u (:u (first fjs))]
       (let [vs (map #(:v %) fjs)
             us (into #{} (map #(clean-us (:u %)) fjs))]
@@ -160,7 +160,7 @@
 
 (defn fj-mul
   [& fjs]
-  (let [fjs (to-fjs fjs)]    
+  (let [fjs (to-fjs fjs)]
     (when @*debug* (println "*" fjs))
     (when-not (empty? fjs)
       (let [v (reduce * (map #(:v %) fjs))
@@ -169,7 +169,7 @@
 
 (defn fj-div
   [& fjs]
-  (let [fjs (to-fjs fjs)]    
+  (let [fjs (to-fjs fjs)]
     (when @*debug* (println "/" fjs))
     (when-not (empty? fjs)
       (let [v (reduce / (map #(:v %) fjs))

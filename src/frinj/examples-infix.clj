@@ -10,8 +10,8 @@
 ;; Alan Eliasen (@aeliasen) deserves all the praise
 
 (ns frinj.examples
-  (:use [frinj.calc])
-  (:use [frinj.infix]))
+  (:use [frinj.calc]
+        [frinj.infix]))
 
 ;; setup the environment
 
@@ -160,7 +160,7 @@
 ;; December 31, 2000	June 30, 2001
 ;; $86,481	        $41,601
 
-(add-unit! :burnrate 
+(add-unit! :burnrate
            ($= (fj (- 86481 41601) :thousand :dollars) /
                ($= (fj :#2001-06-30) - (fj :#2000-12-31))))
 
@@ -286,7 +286,7 @@
 ;; Thus, we can find the sun's power that strikes an area at the distance of the earth
 ;; (knowing the surface area of a sphere is 4 pi radius2):
 
-(add-unit! :earthpower ($= (fj :sunpower) / 
+(add-unit! :earthpower ($= (fj :sunpower) /
                            ($= 4 * (fj :pi) * (fj :sundist) ** 2)))
 (str (fj :earthpower))
 ;; "1372.5422836662622 kg s^-3 [heat_flux_density]"
@@ -439,7 +439,7 @@
 ;; Thus, a good estimate to the problem stated above is that a real (gassy) human would need to
 ;; save their farts for:
 
-(-> ($= (fj 12.5 :kilotons :TNT) / 
+(-> ($= (fj 12.5 :kilotons :TNT) /
         ($= ($= (fj :methanenergy) + (fj :h2energy)) / (fj :day)))
     (to :years) str)
 ;; "7.078157887380842E9 [dimensionless]"
@@ -501,7 +501,7 @@
 
 ;; About 28257 feet of water. This was deposited over 40 days. The rainfall was thus:
 
-(-> ($= (fj :depth) / (fj 40 :days))    
+(-> ($= (fj :depth) / (fj 40 :days))
     (to :inches :per :hour) str)
 ;; "353.21562499999993 [dimensionless]"
 
@@ -525,4 +525,3 @@
 
 ;; Unbelievable. The energy in a teaspoon of water, if we could extract it, is equal to burning
 ;; more than 3 million gallons of gasoline.
-

@@ -7,19 +7,19 @@
 ;;  You must not remove this notice, or any other, from this software.
 
 (ns frinj.test.samplecalc
-  (:use [clojure.test])
-  (:use [frinj.core])
-  (:import [frinj.core fjv])
-  (:use [frinj.calc]))
+  (:use [clojure.test]
+        [frinj.core]
+        [frinj.calc])
+  (:import [frinj.core fjv]))
 
 (defn- samplecalc-test-fixture [f]
   (frinj-init!)
 
-  (add-unit! :burnrate 
-             (fj-div 
+  (add-unit! :burnrate
+             (fj-div
               (fj (- 86481 41601) :thousand :dollars)
               (fj- (fj :#2001-06-30) (fj :#2000-12-31))))
-  
+
   (f))
 
 (use-fixtures :once samplecalc-test-fixture)
@@ -63,6 +63,5 @@
          (-> (fj-div (fj 1100 :W 30 :sec)
                      (fj 27 :oz 1 :calorie :per :gram :per :degC))
              (to :degF))))
-  
-  )
 
+  )

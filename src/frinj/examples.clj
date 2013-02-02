@@ -10,8 +10,8 @@
 ;; Alan Eliasen (@aeliasen) deserves all the praise
 
 (ns frinj.examples
-  (:use [frinj.core])
-  (:use [frinj.calc]))
+  (:use [frinj.core]
+        [frinj.calc]))
 
 ;; setup the environment
 
@@ -168,8 +168,8 @@
 ;; December 31, 2000	June 30, 2001
 ;; $86,481	        $41,601
 
-(add-unit! :burnrate 
-           (fj-div 
+(add-unit! :burnrate
+           (fj-div
             (fj (- 86481 41601) :thousand :dollars)
             (fj- (fj :#2001-06-30) (fj :#2000-12-31))))
 
@@ -523,7 +523,7 @@
 
 ;; About 28257 feet of water. This was deposited over 40 days. The rainfall was thus:
 
-(-> (fj-div (fj :depth) (fj 40 :days))    
+(-> (fj-div (fj :depth) (fj 40 :days))
     (to :inch :per :hour) str)
 ;; "353.21562499999993 [dimensionless]"
 
@@ -547,4 +547,3 @@
 
 ;; Unbelievable. The energy in a teaspoon of water, if we could extract it, is equal to burning
 ;; more than 3 million gallons of gasoline.
-

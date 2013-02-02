@@ -7,8 +7,8 @@
 ;;  You must not remove this notice, or any other, from this software.
 
 (ns frinj.parser
-  (:use [frinj.core])
-  (:use [frinj.utils])
+  (:use [frinj.core]
+        [frinj.utils])
   (:import [frinj.core fjv]))
 
 (def ^{:dynamic true} *trace* (atom false))  ;; trace parse results
@@ -27,7 +27,7 @@
 (defn tokenize
   "Convert a string to a vector of (tagged-list) tokens"
   [data]
-  (loop [res [], st :name, acc "", [fst snd thrd & rst] data]    
+  (loop [res [], st :name, acc "", [fst snd thrd & rst] data]
     (let [r (into rst [thrd snd])
           r2 (into rst [thrd])
           append-acc (fn [] (if (empty? acc)
@@ -41,7 +41,7 @@
                                            (catch Exception e acc))))]
                                (if (number? r)
                                  (conj res [:number r])
-                                 (if (= st :name)                                   
+                                 (if (= st :name)
                                    (conj res [:name acc])
                                    (conj res [:unit acc]))))))]
       (cond
@@ -75,7 +75,7 @@
                                        (conj (append-acc) [:comment (.trim (apply str c))])
                                        ; (append-acc)  ; drop all comments
                                        :name "" rst))
-                     
+
         (= fst \() (recur (conj (append-acc) [:open]) st "" r)
         (= fst \)) (recur (conj (append-acc) [:close]) st "" r)
         (= fst \[) (recur (conj (append-acc) [:open-bracket]) st "" r)
@@ -84,7 +84,7 @@
         ;; (= fst \-) (recur (conj (append-acc) [:minus]) st "" r)
         (= fst \*) (recur (conj (append-acc) [:multiply]) st "" r)
         (= fst \/) (recur (conj (append-acc) [:divide]) st "" r)
-        (= fst \^) (recur (conj (append-acc) [:exp]) st "" r)        
+        (= fst \^) (recur (conj (append-acc) [:exp]) st "" r)
         (= fst \newline) (recur (append-acc) :name "" r)
         (Character/isWhitespace fst) (recur (append-acc) st "" r)
         :else (recur res st (str acc fst) r)))))
@@ -118,7 +118,7 @@
   [toks]
   (loop [acc {}, acc-fact 1, s :n, in-par false,
          [[t1 v1] [t2 _ :as snd] & rst :as toks] toks]
-    
+
     (when @*debug* (println "eat-units" acc acc-fact s in-par toks))
     (let [r (into rst [snd])
           old (get acc v1)
@@ -178,13 +178,13 @@
               (if (prefix? v)
                 [(lookup-prefix v) rst]
                 (throw (Exception. "trying to assign to unknown prefix")))))
-          
+
           (do-parse [acc [[t1 v1 :as fst] [t2 v2 :as snd] [t3 v3 :as thrd] & rst :as toks]]
             ;; (println "parse" toks)
             (let [r (into rst [thrd snd])]
               (cond
                 (nil? t1) true
-                
+
                 ;; prefix definitions
                 (and (= t1 :name) (= t2 :standalone-prefix))
                 (let [[fj rst] (eat-prefix (into rst [thrd]))
@@ -218,7 +218,7 @@
                   (alter fundamental-units #(assoc % (:u rv) v2))
                   (when @*trace* (println v2 "|||" (:u rv)))
                   (recur [] (into rst [thrd])))
-                
+
                 ;; unit definition
                 ;; name := number unit+
                 (and (= t1 :name) (= t2 :assign) (= t3 :number))
@@ -229,7 +229,7 @@
                       nu (:u fj)]
                   (add-unit! v1 (fjv. nfact nu))
                   (when @*trace* (println v1 ":=" nfact nu))
-                  (recur [] rst))   
+                  (recur [] rst))
                 ;; name := unit+
                 (and (= t1 :name) (= t2 :assign) (= t3 :unit))
                 (let [[u fact rst] (eat-units (into rst [thrd]))
@@ -239,9 +239,8 @@
                   (add-unit! v1 (fjv. nfact nu))
                   (when @*trace* (println v1 ":=" nfact nu ))
                   (recur [] rst))
-                
+
                 :else (recur (conj acc fst) r))))]
 
-    (dosync 
+    (dosync
      (do-parse [] toks))))
-

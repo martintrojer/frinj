@@ -7,12 +7,12 @@
 ;;  You must not remove this notice, or any other, from this software.
 
 (ns frinj.test.calc
-  (:use [clojure.test])
-  (:use [frinj.core])  
-  (:import [frinj.core fjv])
-  (:use [frinj.utils])
-  (:use [frinj.parser])
-  (:use [frinj.calc]))
+  (:use [clojure.test]
+        [frinj.core]
+        [frinj.utils]
+        [frinj.parser]
+        [frinj.calc])
+  (:import [frinj.core fjv]))
 
 (defn- calc-test-fixture [f]
   (reset-states!)
@@ -52,7 +52,7 @@
   (is (thrown? Exception         (fj :cm :to)))
   (is (thrown? Exception         (fj :cm :to :to)))
   (is (thrown? Exception         (fj :cm :to 1)))
-  
+
   (is (= (fjv. 3.14 {"s" -1})    (fj :pi :per :s)))
   (is (thrown? Exception         (fj :cm :to :s)))
 

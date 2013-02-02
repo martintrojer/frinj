@@ -7,8 +7,8 @@
 ;;  You must not remove this notice, or any other, from this software.
 
 (ns frinj.test.core
-  (:use [clojure.test])
-  (:use [frinj.core])  
+  (:use [clojure.test]
+        [frinj.core])
   (:import [frinj.core fjv]))
 
 (defn- core-test-fixture [f]
@@ -19,7 +19,7 @@
 
 (deftest add-u
   (do
-    (add-unit! "one" one)    
+    (add-unit! "one" one)
     (is (= @units            {"one" one "ones" one})))
   )
 
@@ -27,11 +27,11 @@
   (do
     (add-unit! "his" one)
     (is (= @units            {"his" one}))))
-  
+
 
 (deftest add-u3
   (do
-    (add-unit! "k" one)    
+    (add-unit! "k" one)
     (is (= @units            {"k" one})))
   )
 
@@ -164,7 +164,7 @@
 (deftest less
   (is (fj-less? one))
   (is (fj-less? zero one))
-  (is (fj-less? zero one (fjv. 2 {})))  
+  (is (fj-less? zero one (fjv. 2 {})))
   (is (not (fj-less? one one)))
   (is (not (fj-less? one zero)))
   )
@@ -172,7 +172,7 @@
 (deftest greater
   (is (fj-greater? one))
   (is (fj-greater? one zero))
-  (is (fj-greater? (fjv. 2 {}) one zero))  
+  (is (fj-greater? (fjv. 2 {}) one zero))
   (is (not (fj-greater? one one)))
   (is (not (fj-greater? zero one)))
   )
@@ -181,7 +181,7 @@
   (is (fj-less-or-equal? one))
   (is (fj-less-or-equal? one one))
   (is (fj-less-or-equal? zero one))
-  (is (fj-less-or-equal? zero one (fjv. 2 {})))  
+  (is (fj-less-or-equal? zero one (fjv. 2 {})))
   (is (not (fj-less-or-equal? one zero)))
   (is (fj-less-or-equal? (fjv. 1.1 {:m 1}) (fjv. 1.1 {:m 1})))
   )
@@ -189,7 +189,7 @@
 (deftest greater-or-equal
   (is (fj-greater-or-equal? one))
   (is (fj-greater-or-equal? one zero))
-  (is (fj-greater-or-equal? (fjv. 2 {}) one zero))  
+  (is (fj-greater-or-equal? (fjv. 2 {}) one zero))
   (is (fj-greater-or-equal? one one))
   (is (not (fj-greater-or-equal? zero one)))
   (is (fj-greater-or-equal? (fjv. 1.1 {:m 1}) (fjv. 1.1 {:m 1})))

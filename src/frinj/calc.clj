@@ -7,11 +7,11 @@
 ;;  You must not remove this notice, or any other, from this software.
 
 (ns frinj.calc
-  (:use [frinj.core])  
-  (:import [frinj.core fjv])
-  (:use [frinj.utils])
-  (:use [frinj.parser])
-  (:import [clojure.java.io]))
+  (:use [frinj.core]
+        [frinj.utils]
+        [frinj.parser])
+  (:import [clojure.java.io]
+           [frinj.core fjv]))
 
 ;; =================================================================
 
@@ -27,7 +27,7 @@
   [os]
   (when @*debug* (println "map-fj-ops" os))
   (loop [acc [], to nil, [fst snd & rst] os]
-    (let [r (into rst [snd])]                   
+    (let [r (into rst [snd])]
       (if-not (nil? fst)
         (cond
           (number? fst) (recur (conj acc [:number fst]) to r)
@@ -55,7 +55,7 @@
      (let [[toks to] (map-fj-operators os)
            [u fact _] (eat-units toks)
            fj (resolve-and-normalize-units u)
-           res (fjv. (* fact (:v fj)) (:u fj))]         
+           res (fjv. (* fact (:v fj)) (:u fj))]
        (if to
          (clean-units (convert res {to 1}))
          res))))
@@ -73,7 +73,7 @@
 (defn to-date
   "Convert a fj of units {s 1} to a date string"
   [fj]
-  (let [fj (clean-units fj)]    
+  (let [fj (clean-units fj)]
     (if (= (:u fj) {"s" 1})
       (let [date (java.util.Date. (long  (* 1000 (:v fj))))]
         (str date))
@@ -115,4 +115,3 @@
 (def fj> fj-greater?)
 (def fj<= fj-less-or-equal?)
 (def fj>= fj-greater-or-equal?)
-

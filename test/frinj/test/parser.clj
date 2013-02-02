@@ -7,18 +7,18 @@
 ;;  You must not remove this notice, or any other, from this software.
 
 (ns frinj.test.parser
-  (:use [clojure.test])
-  (:use [frinj.core])  
-  (:import [frinj.core fjv])
-  (:use [frinj.utils])
-  (:use [frinj.parser])
-  (:use [frinj.calc]))
+  (:use [clojure.test]
+        [frinj.core]
+        [frinj.utils]
+        [frinj.parser]
+        [frinj.calc])
+  (:import [frinj.core fjv]))
 
 (defn- parser-test-fixture [f]
   (reset-states!)
 
   (print "parsing...")
-  (let [start (System/currentTimeMillis)]    
+  (let [start (System/currentTimeMillis)]
     (load-unit-txt-file!)
     (println (- (System/currentTimeMillis) start) "ms"))
   (f))
@@ -139,5 +139,5 @@
   (is (= [[:name "a"] [:assign] [:unit "b"]]
          (tokenize "a:=b")))
   (is (= [[:name "a"] [:assign] [:unit "m"] [:name "b"] [:assign] [:unit "s"]]
-         (tokenize "a:=m\nb:=s"))) 
+         (tokenize "a:=m\nb:=s")))
   )

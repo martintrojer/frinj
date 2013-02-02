@@ -7,7 +7,7 @@
 ;;  You must not remove this notice, or any other, from this software.
 
 (ns frinj.utils
-  (:use [frinj.core])  
+  (:use [frinj.core])
   (:import [frinj.core fjv]))
 
 ;; =================================================================
@@ -34,7 +34,7 @@
 (defn resolve-prefixed-unit
    "Finds the longest prefix in a unit name and replaces it with with factor"
    [uname]
-   (when @*debug*(println "resolve" uname))
+   (when @*debug* (println "resolve" uname))
    (if-let [fj (get @units uname)]
      [one uname]     ;; if name = unit, just return the unit
      (if-let [pfx (->> (filter #(.startsWith uname %) (all-prefix-names))
@@ -68,7 +68,7 @@
   "Replaces units with already defined ones, and remove zero units"
   [fj]
   (when @*debug* (println "norm" fj))
-  (-> 
+  (->
    (reduce (fn [acc [k v]]
              (let [fj (get @units k)
                    fj (if fj fj (get @standalone-prefixes k))]
@@ -79,8 +79,9 @@
                     (if (pos? v)
                       (fj-mul acc (fj-int-pow fj v))
                       (fj-div acc (fj-int-pow fj (Math/abs v))))
-                    (fjv. 1 {k v})))                 
-                 acc))) fj (:u fj))
+                    (fjv. 1 {k v})))
+                 acc)))
+           fj (:u fj))
    (clean-units)))
 
 (defn resolve-and-normalize-units
@@ -104,4 +105,3 @@
       (if (= (:u (fj-inverse nfj)) (:u nu))
         (fj-div (fj-inverse nfj) nu)
         (throw (Exception. "cannot convert to a different unit"))))))
-

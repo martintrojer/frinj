@@ -7,12 +7,12 @@
 ;;  You must not remove this notice, or any other, from this software.
 
 (ns frinj.feeds
-  (:use [frinj.core])  
-  (:import [frinj.core fjv])
-  (:use [frinj.calc])
-  (:use [clojure.xml :only (parse)])
-  (:use [clojure.zip :only (xml-zip children down)])
-  (:import [java.util.concurrent ScheduledThreadPoolExecutor TimeUnit]))
+  (:use [frinj.core]
+        [frinj.calc]
+        [clojure.xml :only [parse]]
+        [clojure.zip :only [xml-zip children down]])
+  (:import [frinj.core fjv]
+           [java.util.concurrent ScheduledThreadPoolExecutor TimeUnit]))
 
 ;; =================================================================
 
@@ -28,7 +28,7 @@
   (.cancel f true))
 
 (defn restart-feed [f period scale]
-  (try 
+  (try
     (stop-feed f)
     (catch Exception e))
   (start-feed f period scale))
@@ -86,7 +86,7 @@
     (reduce (fn [acc r] (assoc acc (get-target r) [(/ 1 (get-rate r)) (fj :USD)]))
             {} rates)))
 
-(comment 
+(comment
   [{:tag :title, :attrs nil, :content ["ARS/USD"]}
    {:tag :link, :attrs nil, :content ["http://themoneyconverter.com/USD/ARS.aspx"]}
    {:tag :guid, :attrs nil, :content ["aa3d0bcc-8e6b-4b4a-9a83-256319785fbb"]}
@@ -125,7 +125,7 @@
     (reduce (fn [acc r] (assoc acc (get-target r) [(get-rate r) (fj :dollar :per (get-weight r))]))
             {} rates)))
 
-(comment 
+(comment
   [{:tag :price, :attrs {:timestamp "1331732940", :per "ozt", :commodity "gold"}, :content ["1647.80"]}
    {:tag :price, :attrs {:timestamp "1331732760", :per "ozt", :commodity "palladium"}, :content ["699.00"]}
    {:tag :price, :attrs {:timestamp "1331732880", :per "ozt", :commodity "platinum"}, :content ["1679.50"]}
@@ -155,4 +155,3 @@
 
 ;; historical
 ;; http://www.measuringworth.com/ppoweruk/result.php?year_result=2005&amount=1&use%5B%5D=CPI&year_source=
-

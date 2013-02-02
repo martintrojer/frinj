@@ -7,10 +7,10 @@
 ;;  You must not remove this notice, or any other, from this software.
 
 (ns frinj.test.utils
-  (:use [clojure.test])
-  (:use [frinj.core])  
-  (:import [frinj.core fjv])
-  (:use [frinj.utils]))
+  (:use [clojure.test]
+        [frinj.core]
+        [frinj.utils])
+  (:import [frinj.core fjv]))
 
 (defn- utils-test-fixture [f]
   (reset-states!)
@@ -94,5 +94,3 @@
   (is (= (fjv. 1/3 {"m" 0 "s" 0})  (convert (fjv. 3 {"m" -1 "s" 1}) {"m" 1 "s" -1})))
   (is (thrown? Exception           (convert (fjv. 3 {"m" -1 "s" 1}) {"m" 1 "s" 1})))
   )
-  
-  
