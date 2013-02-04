@@ -95,7 +95,7 @@
     (str (if (ratio? v) (str v " (approx. " (double v) ")") v) " "
          (str
           (reduce (fn [acc [k v]] (str acc (if (= v 1) (str k " ") (str k "^" v " "))))
-                  "" (clean-us u))
+                  "" (->> u clean-us (into (sorted-map))))
           "[" (get @fundamental-units (clean-us u) "") "]"))))
 
 (def one (fjv. 1 {}))
