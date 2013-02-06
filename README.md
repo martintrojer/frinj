@@ -47,6 +47,8 @@ Start calculating!
 
 * See [example calculations](https://github.com/martintrojer/frinj/blob/master/src/frinj/examples.clj "example calculations") for ideas...
 
+* [Video of a frinj talk](http://skillsmatter.com/podcast/home/frinj-having-fun-with-units-3861)
+
 * Examples using infix calcuation style [here](https://github.com/martintrojer/frinj/blob/master/src/frinj/examples-infix.clj)
 
 * Live units for currencies, precious metals etc, see [simple examples](https://gist.github.com/2036735)
