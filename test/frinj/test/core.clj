@@ -36,7 +36,7 @@
   )
 
 (deftest add-us
-  (is (= {}                  (add-units)))
+  (is (= nil                 (add-units)))
   (is (= {}                  (add-units {})))
   (is (= {:m 1}              (add-units {:m 1})))
   (is (= {:m 1 :s 1}         (add-units {:m 1 :s 1})))

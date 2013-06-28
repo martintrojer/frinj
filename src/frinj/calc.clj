@@ -33,13 +33,13 @@
           (number? fst) (recur (conj acc [:number fst]) to r)
           (= :per fst) (recur (conj acc [:divide]) to r)
           (= :to fst) (if (and (not (nil? snd)) (or (keyword? snd) (string? snd)))
-                        (let [tos (to-unit-str snd)]
+                        (let [tos (name snd)]
                           (if-not (= tos "to")
                             (recur acc tos rst)
                             (throw (Exception. "invalid to target"))))
                         (throw (Exception. "invalid to target")))
           (string? fst) (recur (conj acc [:unit fst]) to r)
-          (keyword? fst) (let [name (to-unit-str fst)]
+          (keyword? fst) (let [name (name fst)]
                            (if (.startsWith name "#")
                              (recur (into acc [[:number (get-seconds (.substring name 1))]
                                                [:unit "s"]])

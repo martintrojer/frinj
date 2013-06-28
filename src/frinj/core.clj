@@ -30,21 +30,14 @@
    (ref-set fundamental-units {})
    (ref-set fundamentals #{})))
 
-(defn to-unit-str
-  "Covert to a unit string"
-  [op]
-  (if (keyword? op)
-    (.substring (str op) 1)
-    (str op)))
-
 (defn add-with-plurals!
   "Adds a unit to the state (and it's potential plural)"
-  [rf name fj]
-  (let [name (to-unit-str name)]
+  [rf uname fj]
+  (let [uname (name uname)]
     (dosync
-     (alter rf #(assoc % name fj))
-     (when-not (or (= \s (last name)) (= 1 (.length name)))
-       (alter rf #(assoc % (str name "s") fj)))
+     (alter rf #(assoc % uname fj))
+     (when-not (or (= \s (last uname)) (= 1 (.length uname)))
+       (alter rf #(assoc % (str uname "s") fj)))
      fj)))
 
 (defn add-unit!
@@ -52,7 +45,7 @@
   [name fj]
   (add-with-plurals! units name fj))
 
-(defn export-states-to-file
+(defn export-states-to-string
   "Exports the state in clojure format to a string"
   []
   (pr-str {:units @units
@@ -82,7 +75,9 @@
 (defn- clean-us
   "Remove all zero-values entries"
   [m]
-  (->> m (filter (fn [[_ v]] (not= v 0))) (into {})))
+  (->> m
+       (remove (fn [[_ v]] (zero? v)))
+       (into {})))
 
 ;; fjv is the core type representing values w/ UOM.
 ;; :v is the value
@@ -101,21 +96,7 @@
 (def one (fjv. 1 {}))
 (def zero (fjv. 0 {}))
 
-(defn add-units
-  "Adds units"
-  [& us]
-  (loop [acc {}, us us]
-    (let [m (first us)]
-      (when @*debug* (println "add-units" acc m us))
-      (if-not (empty? us)
-        (recur
-         (reduce (fn [acc [k v]]
-                   (if-let [av (get acc k)]
-                     (assoc acc k (+ av v))
-                     (assoc acc k v)))
-                 acc (seq m))
-         (rest us))
-        acc))))
+(defn add-units [& us] (apply merge-with (fnil + 0) us))
 
 (defn clean-units
   "Remove 0-ed units from a fjv"
@@ -124,59 +105,57 @@
 
 (defn- to-fjs
   "create fjvs from numbers"
+  [nums]
+  (map #(if (= frinj.core.fjv (class %)) % (fjv. % {})) nums))
+
+(defn- enfore-units
+  "Enforce all fjs' units are the same"
   [fjs]
-  (map #(if (= frinj.core.fjv (class %)) % (fjv. % {})) fjs))
+  (when (> (->> fjs (map :u) (map clean-us) set count) 1)
+    (throw (Exception. "Cannot use operator on units with different dimensions"))))
 
 (defn- add-sub
   [op fjs]
-  (let [fjs (to-fjs fjs)]
-    (when-let [u (:u (first fjs))]
-      (let [vs (map #(:v %) fjs)
-            us (into #{} (map #(clean-us (:u %)) fjs))]
-        (when @*debug* (println "add-sub" fjs u vs us))
-        (if (= (count us) 1)
-          (fjv. (reduce op vs) u)
-          (throw (Exception. "Cannot add units with different dimensions")))))))
+  (when-let [fjs (-> fjs to-fjs seq)]
+    (when @*debug* (println "add-sub" fjs (map :v fjs) (map :u fjs)))
+    (fjv. (reduce op (map :v fjs)) (-> fjs first :u))))
 
 (defn fj-add
   "Adds fjvs"
   [& fjs]
+  (enfore-units fjs)
   (add-sub + fjs))
 
 (defn fj-sub
   "Subtracts fjvs"
   [& fjs]
+  (enfore-units fjs)
   (add-sub - fjs))
 
 (defn- flip-sign
   "Swaps the sign of units"
-  [u]
-  (->>
-   (map (fn [[k v]] [k (- v)]) u)
-   (reduce #(conj %1 %2) {})))
+  [us]
+  (->> us
+       (map (fn [[k v]] [k (- v)]))
+       (into {})))
 
 ;; (flip-sign {:a 1 :b -12})
 ;; (flip-sign {:a -1 :b 0})
 
 (defn fj-mul
   [& fjs]
-  (let [fjs (to-fjs fjs)]
+  (when-let [fjs (-> fjs to-fjs seq)]
     (when @*debug* (println "*" fjs))
-    (when-not (empty? fjs)
-      (let [v (reduce * (map #(:v %) fjs))
-            u (reduce add-units (map #(:u %) fjs))]
-        (fjv. v u)))))
+    (fjv. (reduce * (map :v fjs))
+          (apply add-units (map :u fjs)))))
 
 (defn fj-div
   [& fjs]
-  (let [fjs (to-fjs fjs)]
+  (when-let [fjs (-> fjs to-fjs seq)]
     (when @*debug* (println "/" fjs))
-    (when-not (empty? fjs)
-      (let [v (reduce / (map #(:v %) fjs))
-            first-u (:u (first fjs))
-            rest-u (map #(flip-sign (:u %)) (rest fjs))
-            u (reduce add-units (cons first-u rest-u))]
-        (fjv. v u)))))
+    (fjv. (reduce / (map :v fjs))
+          (apply add-units (concat [(-> fjs first :u)]
+                                   (->> fjs rest (map :u) (map flip-sign)))))))
 
 (defn fj-inverse
   [fj]
@@ -192,38 +171,29 @@
     (throw (Exception. "only integers supported"))))
 
 (defn fj-equal?
-  [fst-fjv & fjs]
-  (loop [[fst & rst] fjs]
-    (if (nil? fst)
-      true
-      (if-not (zero? (:v (fj-sub fst-fjv fst)))
-        false
-        (recur rst)))))
+  [& fjs]
+  (enfore-units fjs)
+  (->> fjs (map clean-units) (apply =)))
 
 (defn fj-not-equal?
   [& fjs]
+  (enfore-units fjs)
   (not (apply fj-equal? fjs)))
 
 (defn fj-less?
   [& fjs]
-  (loop [[fst snd & rst] fjs]
-    (if (or (nil? fst) (nil? snd))
-      true
-      (if-not (< 0 (:v (fj-sub snd fst)))
-        false
-        (recur (into rst [snd]))))))
+  (enfore-units fjs)
+  (->> fjs (map :v) (apply <)))
 
 (defn fj-greater?
   [& fjs]
-  (loop [[fst snd & rst] fjs]
-    (if (or (nil? fst) (nil? snd))
-      true
-      (if-not (> 0 (:v (fj-sub snd fst)))
-        false
-        (recur (into rst [snd]))))))
+  (enfore-units fjs)
+  (->> fjs (map :v) (apply >)))
 
 (defn fj-less-or-equal? [& fjs]
+  (enfore-units fjs)
   (or (apply fj-equal? fjs) (apply fj-less? fjs)))
 
 (defn fj-greater-or-equal? [& fjs]
+  (enfore-units fjs)
   (or (apply fj-equal? fjs) (apply fj-greater? fjs)))
