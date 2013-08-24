@@ -14,60 +14,36 @@
 ;; =================================================================
 ;; Core unit states, and helper functions
 
-(def units (ref {}))
-(def prefixes (ref {}))
-(def standalone-prefixes (ref {}))
-(def fundamental-units (ref {}))
-(def fundamentals (ref #{}))
+(def state (atom nil))
 
-(defn reset-states!
+(defn reset-state!
   "Total reset of the core unit states (to empty)"
   []
-  (dosync
-   (ref-set units {})
-   (ref-set prefixes {})
-   (ref-set standalone-prefixes {})
-   (ref-set fundamental-units {})
-   (ref-set fundamentals #{})))
+  (reset! state
+          {:units {}
+           :prefixes {}
+           :standalone-prefixes {}
+           :fundamental-units {}
+           :fundamentals #{}}))
 
 (defn add-with-plurals!
   "Adds a unit to the state (and it's potential plural)"
-  [rf uname fj]
+  [k uname fj]
   (let [uname (name uname)]
-    (dosync
-     (alter rf #(assoc % uname fj))
-     (when-not (or (= \s (last uname)) (= 1 (.length uname)))
-       (alter rf #(assoc % (str uname "s") fj)))
-     fj)))
+    (swap! state assoc-in [k uname] fj)
+    (when-not (or (= \s (last uname)) (= 1 (.length uname)))
+      (swap! state assoc-in [k (str uname "s")] fj))
+    fj))
 
 (defn add-unit!
   "Adds a unit to the state"
   [name fj]
-  (add-with-plurals! units name fj))
+  (add-with-plurals! :units name fj))
 
-(defn export-states-to-string
-  "Exports the state in clojure format to a string"
-  []
-  (pr-str {:units @units
-           :prefixes @prefixes
-           :standalone-prefixes @standalone-prefixes
-           :fundamental-units @fundamental-units
-           :fundamentals @fundamentals}))
-
-(defn import-states!
+(defn import-state!
   "Import states from a clojure-formatted file"
   [data]
-  (let [{nunits :units
-         nprefixes :prefixes
-         nstandalone-prefixes :standalone-prefixes
-         nfundamental-units :fundamental-units
-         nfundamentals :fundamentals} (read-string data)]
-    (dosync
-     (ref-set units nunits)
-     (ref-set prefixes nprefixes)
-     (ref-set standalone-prefixes nstandalone-prefixes)
-     (ref-set fundamental-units nfundamental-units)
-     (ref-set fundamentals nfundamentals))))
+  (reset! state (read-string data)))
 
 ;; =================================================================
 ;; Core units of measure types and functions
@@ -91,7 +67,7 @@
          (str
           (reduce (fn [acc [k v]] (str acc (if (= v 1) (str k " ") (str k "^" v " "))))
                   "" (->> u clean-us (into (sorted-map))))
-          "[" (get @fundamental-units (clean-us u) "") "]"))))
+          "[" (get (:fundamental-units @state) (clean-us u) "") "]"))))
 
 (def one (fjv. 1 {}))
 (def zero (fjv. 0 {}))
@@ -103,7 +79,7 @@
   [fj]
   (fjv. (:v fj) (clean-us (:u fj))))
 
-(defn- to-fjs
+(defn to-fjs
   "create fjvs from numbers"
   [nums]
   (map #(if (= frinj.core.fjv (class %)) % (fjv. % {})) nums))

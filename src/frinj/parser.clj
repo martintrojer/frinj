@@ -9,7 +9,7 @@
 (ns frinj.parser
   (:use [frinj.core]
         [frinj.utils])
-  (:import [frinj.core fjv]))
+  (:import frinj.core.fjv))
 
 (def ^{:dynamic true} *trace* (atom false))  ;; trace parse results
 (defn enable-trace! [] (reset! *trace* true))
@@ -191,22 +191,22 @@
                       rfj (resolve-and-normalize-units (:u fj))
                       nfj (fjv. (* (:v fj) (:v rfj)) (:u rfj))]
                   (when @*trace* (println v1 "::-" nfj))
-                  (add-with-plurals! standalone-prefixes v1 nfj)
+                  (add-with-plurals! :standalone-prefixes v1 nfj)
                   (recur [] rst))
                 (and (= t1 :name) (= t2 :prefix))
                 (let [[fj rst] (eat-prefix (into rst [thrd]))
                       rfj (resolve-and-normalize-units (:u fj))
                       nfj (fjv. (* (:v fj) (:v rfj)) (:u rfj))]
                   (when @*trace* (println v1 ":-" nfj))
-                  (alter prefixes #(assoc % v1 nfj))
+                  (swap! state assoc-in [:prefixes v1] nfj)
                   (recur [] rst))
 
                 ;; fundamentals
                 (and (= t1 :name) (= t2 :fundamental) (= t3 :unit))
                 (let [u {v3 1}]
-                  (alter fundamental-units #(assoc % u v1))
-                  (alter fundamentals #(conj % v3))
-                  (alter units #(assoc % v3 one))
+                  (swap! state assoc-in [:fundamental-units u] v1)
+                  (swap! state update-in [:fundamentals] #(conj % v3))
+                  (swap! state assoc-in [:units v3] one)
                   (when @*trace* (println v1 "=!=" u))
                   (recur [] rst))
 
@@ -215,7 +215,7 @@
                 (let [acc (map (fn [[t v]] [(if (= t :name) :unit t) v]) acc)
                       [u _ _] (eat-units acc)
                       rv (normalize-units (fjv. 1 u))]
-                  (alter fundamental-units #(assoc % (:u rv) v2))
+                  (swap! state assoc-in [:fundamental-units (:u rv)] v2)
                   (when @*trace* (println v2 "|||" (:u rv)))
                   (recur [] (into rst [thrd])))
 
@@ -242,5 +242,4 @@
 
                 :else (recur (conj acc fst) r))))]
 
-    (dosync
-     (do-parse [] toks))))
+    (do-parse [] toks)))

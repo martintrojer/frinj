@@ -9,10 +9,10 @@
 (ns frinj.test.core
   (:use [clojure.test]
         [frinj.core])
-  (:import [frinj.core fjv]))
+  (:import frinj.core.fjv))
 
 (defn- core-test-fixture [f]
-  (reset-states!)
+  (reset-state!)
   (f))
 
 (use-fixtures :each core-test-fixture)
@@ -20,19 +20,19 @@
 (deftest add-u
   (do
     (add-unit! "one" one)
-    (is (= @units            {"one" one "ones" one})))
+    (is (= (:units @state)            {"one" one "ones" one})))
   )
 
 (deftest add-u2
   (do
     (add-unit! "his" one)
-    (is (= @units            {"his" one}))))
+    (is (= (:units @state)            {"his" one}))))
 
 
 (deftest add-u3
   (do
     (add-unit! "k" one)
-    (is (= @units            {"k" one})))
+    (is (= (:units @state)            {"k" one})))
   )
 
 (deftest add-us

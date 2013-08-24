@@ -10,7 +10,7 @@
   (:use [clojure.test]
         [frinj.core]
         [frinj.calc])
-  (:import [frinj.core fjv]))
+  (:import frinj.core.fjv))
 
 (defn- samplecalc-test-fixture [f]
   (frinj-init!)

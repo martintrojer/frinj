@@ -10,8 +10,10 @@
 ;; Alan Eliasen (@aeliasen) deserves all the praise
 
 (ns frinj.examples
-  (:use [frinj.calc]
-        [frinj.infix]))
+  (:use [frinj.core]
+        [frinj.calc]
+        [frinj.infix])
+  (:import frinj.core.fjv))
 
 ;; setup the environment
 

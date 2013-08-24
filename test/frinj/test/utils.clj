@@ -10,22 +10,21 @@
   (:use [clojure.test]
         [frinj.core]
         [frinj.utils])
-  (:import [frinj.core fjv]))
+  (:import frinj.core.fjv))
 
 (defn- utils-test-fixture [f]
-  (reset-states!)
-  (dosync
-   (alter prefixes #(assoc % "d" (fjv. 1/10 {})))
-   (alter prefixes #(assoc % "c" (fjv. 1/100 {})))
-   (alter standalone-prefixes #(assoc % "kilo" (fjv. 1000 {})))
-   (alter prefixes #(assoc % "k" (fjv. 1000 {})))
-   (alter units #(assoc % "m" (fjv. 1 {})))
-   (alter units #(assoc % "s" (fjv. 1 {})))
-   (alter units #(assoc % "pi" (fjv. 3.14 {})))
-   (alter units #(assoc % "inch" (fjv. 127/5000 {"m" 1})))
-   (alter fundamental-units #(assoc % {"m" 1} (fjv. 1 {})))
-   (alter fundamentals #(conj % "m"))
-   (alter fundamentals #(conj % "s")))
+  (reset-state!)
+  (swap! state assoc-in [:prefixes "d"] (fjv. 1/10 {}))
+  (swap! state assoc-in [:prefixes "c"] (fjv. 1/100 {}))
+  (swap! state assoc-in [:standalone-prefixes "kilo"] (fjv. 1000 {}))
+  (swap! state assoc-in [:prefixes "k"] (fjv. 1000 {}))
+  (swap! state assoc-in [:units "m"] (fjv. 1 {}))
+  (swap! state assoc-in [:units "s"] (fjv. 1 {}))
+  (swap! state assoc-in [:units "pi"] (fjv. 3.14 {}))
+  (swap! state assoc-in [:units "inch"] (fjv. 127/5000 {"m" 1}))
+  (swap! state assoc-in [:fundamental-units {"m" 1}] (fjv. 1 {}))
+  (swap! state update-in [:fundamentals] #(conj % "m"))
+  (swap! state update-in [:fundamentals] #(conj % "s"))
   (f))
 
 (use-fixtures :once utils-test-fixture)

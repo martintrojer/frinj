@@ -8,7 +8,7 @@
 
 (ns frinj.utils
   (:use [frinj.core])
-  (:import [frinj.core fjv]))
+  (:import frinj.core.fjv))
 
 ;; =================================================================
 ;; prefix queries and transforms
@@ -16,31 +16,31 @@
 (defn prefix?
   "It this a prefix?"
   [p]
-  (or (contains? @standalone-prefixes p)
-      (contains? @prefixes p)))
+  (or (get-in @state [:standalone-prefixes p])
+      (get-in @state [:prefixes p])))
 
 (defn all-prefix-names
   "Get all list of all prefix names"
   []
-  (concat (keys @standalone-prefixes) (keys @prefixes)))
+  (concat (-> @state :standalone-prefixes keys)
+          (-> @state :prefixes keys)))
 
 (defn lookup-prefix
   "Get the value of the given prefix"
   [p]
-  (if-let [r (get @standalone-prefixes p)]
-    r
-    (get @prefixes p)))
+  (get-in @state [:standalone-prefixes p]
+          (get-in @state [:prefixes p])))
 
 (defn resolve-prefixed-unit
    "Finds the longest prefix in a unit name and replaces it with with factor"
    [uname]
    (when @*debug* (println "resolve" uname))
-   (if-let [fj (get @units uname)]
+   (if-let [fj (get-in @state [:units uname])]
      [one uname]     ;; if name = unit, just return the unit
      (if-let [pfx (->> (filter #(.startsWith uname %) (all-prefix-names))
                        (sort-by #(.length %))
                        reverse
-                       (filter #(contains? @units (.substring uname (.length %))))
+                       (filter #(contains? (:units @state) (.substring uname (.length %))))
                        first)]
        [(lookup-prefix pfx) (.substring uname (.length pfx))]
        ;; no match, return the uname
@@ -70,10 +70,10 @@
   (when @*debug* (println "norm" fj))
   (->
    (reduce (fn [acc [k v]]
-             (let [fj (get @units k)
-                   fj (if fj fj (get @standalone-prefixes k))]
+             (let [fj (get-in @state [:units k])
+                   fj (if fj fj (get-in @state [:standalone-prefixes k]))]
                (if fj
-                 (if (contains? @fundamentals k)    ;;(= fj one)
+                 (if (get-in @state [:fundamentals k]) ;;(= fj one)
                    acc
                    (fj-div
                     (if (pos? v)

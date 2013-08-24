@@ -11,7 +11,8 @@
 
 (ns frinj.examples
   (:use [frinj.core]
-        [frinj.calc]))
+        [frinj.calc])
+  (:import frinj.core.fjv))
 
 ;; setup the environment
 

@@ -11,7 +11,7 @@
         [frinj.calc]
         [clojure.xml :only [parse]]
         [clojure.zip :only [xml-zip children down]])
-  (:import [frinj.core fjv]
+  (:import frinj.core.fjv
            [java.util.concurrent ScheduledThreadPoolExecutor TimeUnit]))
 
 ;; =================================================================

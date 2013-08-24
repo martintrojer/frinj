@@ -10,8 +10,7 @@
   (:use [frinj.core]
         [frinj.utils]
         [frinj.parser])
-  (:import [clojure.java.io]
-           [frinj.core fjv]))
+  (:import frinj.core.fjv))
 
 ;; =================================================================
 
@@ -87,7 +86,7 @@
 (defn load-unit-txt-file!
   "Resets the states and loads units from the frink units.txt file"
   []
-  (reset-states!)
+  (reset-state!)
   (with-open [rdr (clojure.java.io/reader unit-txt-file)]
     (doseq [line (line-seq rdr)]
       (-> line (tokenize) parse!))))
@@ -98,7 +97,7 @@
   "Init the frinj envrionment. Will try to load the clj-unit file - if that fails the unit.txt file"
   []
   (try
-    (import-states! (slurp unit-clj-file))
+    (import-state! (slurp unit-clj-file))
     (catch Exception e
       (load-unit-txt-file!))))
 
