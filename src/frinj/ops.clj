@@ -101,9 +101,11 @@
     (->> @core/state :units
          (filter #(re-find pat (first %))))))
 
-(defn list-fundamentals []
-  (let [fus (->> @core/state :fundamental-units)]
-    (zipmap (vals fus) (keys fus))))
+(defn find-fundamentals [s]
+  (let [fus (->> @core/state :fundamental-units)
+        pat (re-pattern s)]
+    (->> (zipmap (vals fus) (keys fus))
+         (filter #(re-find pat (first %))))))
 
 (def fj+ core/fj-add)
 (def fj- core/fj-sub)

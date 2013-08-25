@@ -12,63 +12,7 @@
 (def ^:dynamic *debug* (atom false))
 (defn enable-debug! [] (reset! *debug* true))
 
-;; =================================================================
-;; Our state
-
 (def state (atom nil))
-
-(defn reset-state!
-  "Total reset of the core unit states (to empty)"
-  []
-  (reset! state
-          {:units {}
-           :prefixes {}
-           :standalone-prefixes {}
-           :fundamental-units {}
-           :fundamentals #{}}))
-
-(def ^:private unit-clj-file (io/resource "units.clj"))
-
-(defn restore-state! []
-  (reset! state (-> unit-clj-file slurp read-string)))
-
-;; ------------------------
-;; manipulate the state
-
-(defn add-with-plurals!
-  "Adds a unit to the state (and it's potential plural)"
-  [k uname fj]
-  (let [uname (name uname)]
-    (swap! state assoc-in [k uname] fj)
-    (when-not (or (= \s (last uname)) (= 1 (.length uname)))
-      (swap! state assoc-in [k (str uname "s")] fj))
-    fj))
-
-(defn add-unit!
-  "Adds a unit to the state"
-  [name fj]
-  (add-with-plurals! :units name fj))
-
-;; ------------------------
-;; queries
-
-(defn prefix?
-  "It this a prefix?"
-  [p]
-  (or (get-in @state [:standalone-prefixes p])
-      (get-in @state [:prefixes p])))
-
-(defn all-prefix-names
-  "Get all list of all prefix names"
-  []
-  (concat (-> @state :standalone-prefixes keys)
-          (-> @state :prefixes keys)))
-
-(defn lookup-prefix
-  "Get the value of the given prefix"
-  [p]
-  (get-in @state [:standalone-prefixes p]
-          (get-in @state [:prefixes p])))
 
 ;; =================================================================
 ;; The core "Number" class
@@ -96,6 +40,72 @@
 
 (def one (fjv. 1 {}))
 (def zero (fjv. 0 {}))
+
+(defn reset-state!
+  "Total reset of the core unit states (to empty)"
+  []
+  (reset! state
+          {:units {}
+           :prefixes {}
+           :standalone-prefixes {}
+           :fundamental-units {}
+           :fundamentals #{}}))
+
+;; =================================================================
+;; manipulate the state
+
+(defn add-with-plurals!
+  "Adds a unit to the state (and it's potential plural)"
+  [k uname fj]
+  (let [uname (name uname)]
+    (swap! state assoc-in [k uname] fj)
+    (when-not (or (= \s (last uname)) (= 1 (.length uname)))
+      (swap! state assoc-in [k (str uname "s")] fj))
+    fj))
+
+(defn add-unit!
+  "Adds a unit to the state"
+  [name fj]
+  (add-with-plurals! :units name fj))
+
+(def ^:private unit-clj-file (io/resource "units.edn"))
+
+(defn restore-state! []
+  (let [map->fjv (fn [[n m]] [n (fjv. (:v m) (:u m))])
+        d (-> unit-clj-file slurp read-string)]
+    (reset! state
+            (assoc d
+              :units (->> d :units (map map->fjv) (into {}))
+              :prefixes (->> d :prefixes (map map->fjv) (into {}))
+              :standalone-prefixes (->> d :standalone-prefixes (map map->fjv) (into {}))))))
+
+(defn export-state []
+  (let [fjv->map (fn [[n fj]] [n (into {} fj)])]
+    (assoc @state
+      :units (->> @state :units (map fjv->map) (into {}))
+      :prefixes (->> @state :prefixes (map fjv->map) (into {}))
+      :standalone-prefixes (->> @state :standalone-prefixes (map fjv->map) (into {})))))
+
+;; ------------------------
+;; queries
+
+(defn prefix?
+  "It this a prefix?"
+  [p]
+  (or (get-in @state [:standalone-prefixes p])
+      (get-in @state [:prefixes p])))
+
+(defn all-prefix-names
+  "Get all list of all prefix names"
+  []
+  (concat (-> @state :standalone-prefixes keys)
+          (-> @state :prefixes keys)))
+
+(defn lookup-prefix
+  "Get the value of the given prefix"
+  [p]
+  (get-in @state [:standalone-prefixes p]
+          (get-in @state [:prefixes p])))
 
 ;; =================================================================
 ;; Helpers
