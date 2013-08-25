@@ -40,10 +40,6 @@
     (to :feet) str)
 ;; "5669904625/10618817472 (approx. 0.5339487791320047) [dimensionless]"
 
-;; -- please note that I'm using the (ns frinj.core) division operator (fj-div) here for clarity
-;;    you can also use the operator called (fj_), they are the same
-;;    see https://github.com/martintrojer/frinj/wiki/User-Guide for more details
-
 ;; So you could only fill it about 0.53 feet deep. It'll be a pretty sad pool party.
 
 ;; =================================================================
