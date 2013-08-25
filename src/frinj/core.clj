@@ -41,16 +41,6 @@
 (def one (fjv. 1 {}))
 (def zero (fjv. 0 {}))
 
-(defn reset-state!
-  "Total reset of the core unit states (to empty)"
-  []
-  (reset! state
-          {:units {}
-           :prefixes {}
-           :standalone-prefixes {}
-           :fundamental-units {}
-           :fundamentals #{}}))
-
 ;; =================================================================
 ;; manipulate the state
 
@@ -67,6 +57,16 @@
   "Adds a unit to the state"
   [name fj]
   (add-with-plurals! :units name fj))
+
+(defn reset-state!
+  "Total reset of the core unit states (to empty)"
+  []
+  (reset! state
+          {:units {}
+           :prefixes {}
+           :standalone-prefixes {}
+           :fundamental-units {}
+           :fundamentals #{}}))
 
 (def ^:private unit-clj-file (io/resource "units.edn"))
 
