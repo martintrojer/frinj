@@ -6,8 +6,7 @@ Features
 
 * Breaking namespace changes
 
-utils -> core
-calc, repl -> ops
+utils -> core,  calc + repl -> ops
 
 * New operators
 
