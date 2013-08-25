@@ -6,12 +6,10 @@
 ;;  the terms of this license.
 ;;  You must not remove this notice, or any other, from this software.
 
-(ns frinj.test.calc
+(ns frinj.test.ops
   (:use [clojure.test]
-        [frinj.core]
-        [frinj.utils]
-        [frinj.parser]
-        [frinj.calc])
+        [frinj.core :only [reset-state! state]]
+        [frinj.ops])
   (:import frinj.core.fjv))
 
 (defn- calc-test-fixture [f]

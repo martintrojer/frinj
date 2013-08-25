@@ -8,7 +8,6 @@
 
 (ns frinj.feeds
   (:use [frinj.core]
-        [frinj.calc]
         [clojure.xml :only [parse]]
         [clojure.zip :only [xml-zip children down]])
   (:import frinj.core.fjv
@@ -57,7 +56,7 @@
   (loop [[[cur [rate src]] & rst] (vec unit-map)]
     (when @*debug* (println "update-units!" cur rate src))
     (when cur
-      (add-unit! cur (fj* rate src))
+      (add-unit! cur (fj-mul rate src))
       (recur rst))))
 
 ;; =================================================================
@@ -83,7 +82,7 @@
                    children
                    (filter #(= (:tag %) :item))
                    (map :content))]
-    (reduce (fn [acc r] (assoc acc (get-target r) [(/ 1 (get-rate r)) (fj :USD)]))
+    (reduce (fn [acc r] (assoc acc (get-target r) [(/ 1 (get-rate r)) (fjv. 1 {"USD" 1})]))
             {} rates)))
 
 (comment
@@ -95,7 +94,7 @@
    {:tag :category, :attrs nil, :content ["South America"]}])
 
 (defn- update-themoneyconverter-com-rates []
-  (add-unit! "USD" (fj :dollar))
+  (add-unit! "USD" (fjv. 1 {"dollar" 1}))
   (update-units! (get-themoneyconverter-com-rates)))
 
 (defn restart-exchange-feed! []
@@ -122,7 +121,7 @@
                    first            ;; TODO; not good, filter for usd here
                    :content)]
 
-    (reduce (fn [acc r] (assoc acc (get-target r) [(get-rate r) (fj :dollar :per (get-weight r))]))
+    (reduce (fn [acc r] (assoc acc (get-target r) [(get-rate r) (fjv. 1 {"dollar" 1 (get-weight r) -1})]))
             {} rates)))
 
 (comment
@@ -132,14 +131,14 @@
    {:tag :price, :attrs {:timestamp "1331732940", :per "ozt", :commodity "silver"}, :content ["32.88"]}])
 
 (defn- update-precious-metal-rates []
-  (add-unit! "ozt" (fj :oz))
+  (add-unit! "ozt" (fjv. 1 {"oz" 1}))
   (update-units! (get-xmlcharts-com-rates "http://www.xmlcharts.com/cache/precious-metals.xml")))
 
 (defn- update-industrial-metal-rates []
   (update-units! (get-xmlcharts-com-rates "http://www.xmlcharts.com/cache/industrial-metals.xml")))
 
 (defn- update-agrarian-rates []
-  (add-unit! "short-hundredweight" (fj 100 :lb))
+  (add-unit! "short-hundredweight" (fjv. 100 {"lb" 1}))
   (update-units! (get-xmlcharts-com-rates "http://www.xmlcharts.com/cache/agrarian.xml")))
 
 (defn restart-precious-metal-feed! []
@@ -155,3 +154,11 @@
 
 ;; historical
 ;; http://www.measuringworth.com/ppoweruk/result.php?year_result=2005&amount=1&use%5B%5D=CPI&year_source=
+
+;; =================================================================
+
+(defn setup-feeds []
+  (restart-exchange-feed!)
+  (restart-precious-metal-feed!)
+  (restart-industrial-metal-feed!)
+  (restart-agrarian-feed!))

@@ -10,9 +10,7 @@
 ;; Alan Eliasen (@aeliasen) deserves all the praise
 
 (ns frinj.examples
-  (:use [frinj.core]
-        [frinj.calc])
-  (:import frinj.core.fjv))
+  (:use [frinj.ops]))
 
 ;; setup the environment
 
@@ -37,14 +35,13 @@
 ;; So it would weigh almost 60,000 pounds. What if you knew that your floor could only
 ;; support 2 tons? How deep could you fill the room with water?
 
-(-> (fj-div (fj 2 :tons)
-            (fj 10 :feet 12 :feet :water))
+(-> (fj_ (fj 2 :tons)
+         (fj 10 :feet 12 :feet :water))
     (to :feet) str)
 ;; "5669904625/10618817472 (approx. 0.5339487791320047) [dimensionless]"
 
-;; -- please note that I'm using the (ns frinj.core) division operator (fj-div) here for clarity
-;;    you can also use the (ns frinj.calc) operator called (fj_), they are the same
-;;    see https://github.com/martintrojer/frinj/wiki/User-Guide for more details
+;; fj_ is the same as fj-div
+;; see https://github.com/martintrojer/frinj/wiki/User-Guide for more details
 
 ;; So you could only fill it about 0.53 feet deep. It'll be a pretty sad pool party.
 
@@ -76,7 +73,7 @@
 ;; What percent alcohol is that stuff?
 
 (add-unit! :junglejuice
-           (fj-div (fj 1.75 :liter 190 :proof) (fj 5 :gallon)))
+           (fj_ (fj 1.75 :liter 190 :proof) (fj 5 :gallon)))
 
 (-> (fj :junglejuice :to :percent) str)
 ;; "8.783720740908436 [dimensionless]"
@@ -109,22 +106,22 @@
 ;; (Remember that 3.2 beer is measured in alcohol/weight, so we correct by the density
 ;; ratio of water/alcohol to get alcohol by volume:
 
-(-> (fj-div (fj 60 :dollars)
-            (fj :keg 3.2 :percent :water :per :alcohol))
+(-> (fj_ (fj 60 :dollars)
+         (fj :keg 3.2 :percent :water :per :alcohol))
     (to :dollars :per :floz) str)
 ;; "0.7459362399193548 [dimensionless]"
 
 ;; A bottle of cheap wine? (A "winebottle" is the standard 750 ml size.)
 
-(-> (fj-div (fj 6.99 :dollars)
-            (fj :winebottle 13 :percent))
+(-> (fj_ (fj 6.99 :dollars)
+         (fj :winebottle 13 :percent))
     (to :dollars :per :floz) str)
 ;; "2.1201945809423077 [dimensionless]"
 
 ;; A big plastic bottle of really bad vodka?
 
-(-> (fj-div (fj 13.99 :dollars)
-            (fj 1750 :ml 80 :proof))
+(-> (fj_ (fj 13.99 :dollars)
+         (fj 1750 :ml 80 :proof))
     (to :dollars :per :floz) str)
 ;; "0.59104811225625 [dimensionless]"
 
@@ -135,9 +132,9 @@
 ;; and have a mass 1/4 that of earth's moon. If the mother ship were a sphere, what would
 ;; its density be? (The volume of a sphere is 4/3 pi radius3)
 
-(-> (fj-div (fj 1/4 :moonmass)
-            (fj 4/3 :pi)
-            (fj** (fj 500/2 :km) 3))
+(-> (fj_ (fj 1/4 :moonmass)
+         (fj 4/3 :pi)
+         (fj** (fj 500/2 :km) 3))
     (to :water) str)
 ;; "280.68438439732194 [dimensionless]"
 
@@ -150,8 +147,8 @@
 ;; Surface gravity is given by G mass / radius2, where G is the gravitational constant
 ;; (which Frinj knows about):
 
-(-> (fj-div (fj :G 1/4 :moonmass)
-            (fj** (fj 500/2 :km) 2))
+(-> (fj_ (fj :G 1/4 :moonmass)
+         (fj** (fj 500/2 :km) 2))
     (to :gravity) str)
 ;; "2.000331549387406 [dimensionless]"
 
@@ -170,17 +167,18 @@
 ;; $86,481	        $41,601
 
 (add-unit! :burnrate
-           (fj-div
+           (fj_
             (fj (- 86481 41601) :thousand :dollars)
             (fj- (fj :#2001-06-30) (fj :#2000-12-31))))
 
 (-> (to (fj :burnrate) :dollars :per :day) str)
+
 ;; "1077120000/4343 (approx. 248012.8943126871) [dimensionless]"
 
 ;; You can calculate the number of days until the money runs out at this rate:
 
-(-> (fj-div (fj 41601 :thousand :dollars)
-            (fj :burnrate))
+(-> (fj_ (fj 41601 :thousand :dollars)
+         (fj :burnrate))
     (to :days) str)
 ;; "60224381/359040 (approx. 167.7372465463458) [dimensionless]"
 
@@ -188,8 +186,8 @@
 ;; find out the exact date this corresponds to:
 
 (-> (fj+ (fj :#2001-06-30)
-         (fj-div (fj 41601 :thousand :dollars)
-                 (fj :burnrate)))
+         (fj_ (fj 41601 :thousand :dollars)
+              (fj :burnrate)))
     to-date)
 ;; "Fri Dec 14 16:41:38 GMT 2001"
 
@@ -271,8 +269,8 @@
 ;; their temperature increase? I have a big 27 ounce (mass) can, and I'll assume that their
 ;; specific heat is about the same as that of water (1 calorie/gram/degC):
 
-(-> (fj-div (fj 1100 :W 30 :sec)
-            (fj 27 :oz 1 :calorie :per :gram :per :degC))
+(-> (fj_ (fj 1100 :W 30 :sec)
+         (fj 27 :oz 1 :calorie :per :gram :per :degC))
     (to :degF) str)
 ;; "800000000000/43161375789 (approx. 18.53509035279376) [dimensionless]"
 
@@ -300,9 +298,9 @@
 ;; Thus, we can find the sun's power that strikes an area at the distance of the earth
 ;; (knowing the surface area of a sphere is 4 pi radius2):
 
-(add-unit! :earthpower (fj-div (fj :sunpower)
-                               (fj* 4 (fj :pi)
-                                    (fj** (fj :sundist) 2))))
+(add-unit! :earthpower (fj_ (fj :sunpower)
+                            (fj* 4 (fj :pi)
+                                 (fj** (fj :sundist) 2))))
 (str (fj :earthpower))
 ;; "1372.5422836662622 kg s^-3 [heat_flux_density]"
 
@@ -353,8 +351,8 @@
 ;; The Hiroshima bomb had a yield of 12.5 kilotons of TNT, which is a very small bomb by today's
 ;; standards. How many horsepower would that be?
 
-(-> (fj-div (fj 12.5 :kilotons :TNT)
-            (fj+ (fj 6 :years) (fj 9 :months)))
+(-> (fj_ (fj 12.5 :kilotons :TNT)
+         (fj+ (fj 6 :years) (fj 9 :months)))
     (to :horsepower) str)
 ;; "329.26013859711395 [dimensionless]"
 
@@ -363,8 +361,8 @@
 ;; could blow me 1000 feet straight up. To produce that kind of energy, how much food would you
 ;; have to eat a day?
 
-(-> (fj-div (fj 12.5 :kilotons :TNT)
-            (fj+ (fj 6 :years) (fj 9 :months)))
+(-> (fj_ (fj 12.5 :kilotons :TNT)
+         (fj+ (fj 6 :years) (fj 9 :months)))
     (to :Calories :per :day) str)
 ;; "5066811.55086559 [dimensionless]"
 
@@ -373,8 +371,8 @@
 ;; fart factory, converting food energy into farts with 100% efficiency, and ate a normal 2000
 ;; Calories/day, how many years would it really take?
 
-(-> (fj-div (fj 12.5 :kilotons :TNT)
-            (fj 2000 :Calories :per :day))
+(-> (fj_ (fj 12.5 :kilotons :TNT)
+         (fj 2000 :Calories :per :day))
     (to :years) str)
 ;; "17100.488984171363 [dimensionless]"
 
@@ -384,10 +382,10 @@
 ;; in a fart is only 1/10 as combustible as pure natural gas. What would be the velocity of the gas
 ;; coming out?
 
-(-> (fj-div (fj 12.5 :kilotons :TNT)
-            (fj :natural_gas)
-            (fj+ (fj 6 :years) (fj 9 :months))
-            (fj* (fj :pi) (fj** (fj 0.5 :in) 2)))
+(-> (fj_ (fj 12.5 :kilotons :TNT)
+         (fj :natural_gas)
+         (fj+ (fj 6 :years) (fj 9 :months))
+         (fj* (fj :pi) (fj** (fj 0.5 :in) 2)))
     (fj* 10)
     (to :mph) str)
 ;; "281.5904462031102 [dimensionless]"
@@ -456,8 +454,8 @@
 ;; Thus, a good estimate to the problem stated above is that a real (gassy) human would need to
 ;; save their farts for:
 
-(-> (fj-div (fj 12.5 :kilotons :TNT)
-            (fj-div (fj+ (fj :methanenergy) (fj :h2energy)) (fj :day)))
+(-> (fj_ (fj 12.5 :kilotons :TNT)
+         (fj_ (fj+ (fj :methanenergy) (fj :h2energy)) (fj :day)))
     (to :days) str)
 ;; "7.078157887380842E9 [dimensionless]"
 
@@ -476,10 +474,10 @@
 ;; hour at a service speed of 28 knots. By legislation in many areas, diesel fuel must have
 ;; a density no higher than 0.85 kg/liter (if it were watered down, it would be higher.)
 
-(-> (fj-div (fj 18 :tons)
-            (fj :hour)
-            (fj 28 :knot)
-            (fj 0.85 :kg :per :liter))
+(-> (fj_ (fj 18 :tons)
+         (fj :hour)
+         (fj 28 :knot)
+         (fj 0.85 :kg :per :liter))
     (to :feet :per :gallon) str)
 ;; "33.52338503156234 [dimensionless]"
 
@@ -494,8 +492,8 @@
 ;; Let's see... let's try with a medium-expensive, light car. A 2001 Corvette Z06 weighs
 ;; 3,115 pounds and costs $48,055.
 
-(-> (fj-div (fj 48055 :dollars)
-            (fj 3115 :lb))
+(-> (fj_ (fj 48055 :dollars)
+         (fj 3115 :lb))
     (to :dollars :per :lb) str)
 ;; "1373/89 (approx. 15.42696629213483) [dimensionless]"
 
@@ -524,7 +522,7 @@
 
 ;; About 28257 feet of water. This was deposited over 40 days. The rainfall was thus:
 
-(-> (fj-div (fj :depth) (fj 40 :days))
+(-> (fj_ (fj :depth) (fj 40 :days))
     (to :inch :per :hour) str)
 ;; "353.21562499999993 [dimensionless]"
 

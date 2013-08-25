@@ -8,15 +8,14 @@
 
 (ns frinj.test.samplecalc
   (:use [clojure.test]
-        [frinj.core]
-        [frinj.calc])
+        [frinj.ops])
   (:import frinj.core.fjv))
 
 (defn- samplecalc-test-fixture [f]
   (frinj-init!)
 
   (add-unit! :burnrate
-             (fj-div
+             (fj_
               (fj (- 86481 41601) :thousand :dollars)
               (fj- (fj :#2001-06-30) (fj :#2000-12-31))))
 
@@ -32,19 +31,19 @@
          (fj 10 :feet 12 :feet 8 :feet :water :to :pounds)))
 
   (is (= (fjv. 5669904625/10618817472 {})
-         (->  (fj-div (fj 2 :tons)
-                      (fj 10 :feet 12 :feet :water))
+         (->  (fj_ (fj 2 :tons)
+                   (fj 10 :feet 12 :feet :water))
               (to :feet))))
 
   (is (= (fjv. 60224381/359040 {})
-         (-> (fj-div (fj 41601 :thousand :dollars)
-                     (fj :burnrate))
+         (-> (fj_ (fj 41601 :thousand :dollars)
+                  (fj :burnrate))
              (to :days))))
 
   (is (= "Fri Dec 14 16:41:38 GMT 2001"
          (-> (fj+ (fj :#2001-06-30)
-                  (fj-div (fj 41601 :thousand :dollars)
-                          (fj :burnrate)))
+                  (fj_ (fj 41601 :thousand :dollars)
+                       (fj :burnrate)))
              to-date)))
 
   (is (= (fjv. 368175625/129048129 {})
@@ -60,8 +59,8 @@
          (fj 2000 :Calories :per :day :to :watts)))
 
   (is (= (fjv. 800000000000/43161375789 {})
-         (-> (fj-div (fj 1100 :W 30 :sec)
-                     (fj 27 :oz 1 :calorie :per :gram :per :degC))
+         (-> (fj_ (fj 1100 :W 30 :sec)
+                  (fj 27 :oz 1 :calorie :per :gram :per :degC))
              (to :degF))))
 
   )

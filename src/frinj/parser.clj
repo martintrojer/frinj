@@ -7,8 +7,7 @@
 ;;  You must not remove this notice, or any other, from this software.
 
 (ns frinj.parser
-  (:use [frinj.core]
-        [frinj.utils])
+  (:use [frinj.core])
   (:import frinj.core.fjv))
 
 (def ^{:dynamic true} *trace* (atom false))  ;; trace parse results

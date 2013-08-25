@@ -12,7 +12,7 @@
 (defn enable-debug! [] (reset! *debug* true))
 
 ;; =================================================================
-;; Core unit states, and helper functions
+;; Our state
 
 (def state (atom nil))
 
@@ -25,6 +25,9 @@
            :standalone-prefixes {}
            :fundamental-units {}
            :fundamentals #{}}))
+
+;; ------------------------
+;; manipulate the state
 
 (defn add-with-plurals!
   "Adds a unit to the state (and it's potential plural)"
@@ -40,13 +43,29 @@
   [name fj]
   (add-with-plurals! :units name fj))
 
-(defn import-state!
-  "Import states from a clojure-formatted file"
-  [data]
-  (reset! state (read-string data)))
+;; ------------------------
+;; queries
+
+(defn prefix?
+  "It this a prefix?"
+  [p]
+  (or (get-in @state [:standalone-prefixes p])
+      (get-in @state [:prefixes p])))
+
+(defn all-prefix-names
+  "Get all list of all prefix names"
+  []
+  (concat (-> @state :standalone-prefixes keys)
+          (-> @state :prefixes keys)))
+
+(defn lookup-prefix
+  "Get the value of the given prefix"
+  [p]
+  (get-in @state [:standalone-prefixes p]
+          (get-in @state [:prefixes p])))
 
 ;; =================================================================
-;; Core units of measure types and functions
+;; The core "Number" class
 
 (defn- clean-us
   "Remove all zero-values entries"
@@ -72,23 +91,29 @@
 (def one (fjv. 1 {}))
 (def zero (fjv. 0 {}))
 
-(defn add-units [& us] (apply merge-with (fnil + 0) us))
+;; =================================================================
+;; Helpers
 
 (defn clean-units
   "Remove 0-ed units from a fjv"
   [fj]
   (fjv. (:v fj) (clean-us (:u fj))))
 
-(defn to-fjs
+(defn- to-fjs
   "create fjvs from numbers"
   [nums]
-  (map #(if (= frinj.core.fjv (class %)) % (fjv. % {})) nums))
+  (map #(if (= fjv (type %)) % (fjv. % {})) nums))
 
 (defn- enfore-units
   "Enforce all fjs' units are the same"
   [fjs]
   (when (> (->> fjs (map :u) (map clean-us) set count) 1)
     (throw (Exception. "Cannot use operator on units with different dimensions"))))
+
+;; =================================================================
+;; Primitve math functions
+
+(defn add-units [& us] (apply merge-with (fnil + 0) us))
 
 (defn- add-sub
   [op fjs]
@@ -114,9 +139,6 @@
   (->> us
        (map (fn [[k v]] [k (- v)]))
        (into {})))
-
-;; (flip-sign {:a 1 :b -12})
-;; (flip-sign {:a -1 :b 0})
 
 (defn fj-mul
   [& fjs]
@@ -173,3 +195,81 @@
 (defn fj-greater-or-equal? [& fjs]
   (enfore-units fjs)
   (or (apply fj-equal? fjs) (apply fj-greater? fjs)))
+
+;; =================================================================
+;; prefix transforms
+
+(defn resolve-prefixed-unit
+   "Finds the longest prefix in a unit name and replaces it with with factor"
+   [uname]
+   (when @*debug* (println "resolve" uname))
+   (if-let [fj (get-in @state [:units uname])]
+     [one uname]     ;; if name = unit, just return the unit
+     (if-let [pfx (->> (filter #(.startsWith uname %) (all-prefix-names))
+                       (sort-by #(.length %))
+                       reverse
+                       (filter #(contains? (:units @state) (.substring uname (.length %))))
+                       first)]
+       [(lookup-prefix pfx) (.substring uname (.length pfx))]
+       ;; no match, return the uname
+       [one uname])))
+
+;; {prefix:u1 1, prefix:u2 -1} -> (fj-val. fact {u1:1, u2:-1})
+(defn resolve-unit-prefixes
+  "Replaces all units with prefix + new unit"
+  [u]
+  (when @*debug* (println "resolve-units" u))
+  (reduce (fn [acc [k v]]
+            (let [[fact u] (resolve-prefixed-unit k)]
+              (if (pos? v)
+                (fj-mul (fjv. (:v acc) (add-units (:u acc) {u v}))
+                        (fj-int-pow fact v))
+                (fj-div (fjv. (:v acc) (add-units (:u acc) {u v}))
+                        (fj-int-pow fact (Math/abs v))))))
+          one u))
+
+;; =================================================================
+;; unit normaliztion
+
+;; (fj-val. fact {u1:1, u2:-1} -> (fl-val. nfact {u0:1, u2:-1}
+(defn normalize-units
+  "Replaces units with already defined ones, and remove zero units"
+  [fj]
+  (when @*debug* (println "norm" fj))
+  (->
+   (reduce (fn [acc [k v]]
+             (let [fj (get-in @state [:units k])
+                   fj (if fj fj (get-in @state [:standalone-prefixes k]))]
+               (if fj
+                 (if (get-in @state [:fundamentals k]) ;;(= fj one)
+                   acc
+                   (fj-div
+                    (if (pos? v)
+                      (fj-mul acc (fj-int-pow fj v))
+                      (fj-div acc (fj-int-pow fj (Math/abs v))))
+                    (fjv. 1 {k v})))
+                 acc)))
+           fj (:u fj))
+   (clean-units)))
+
+(defn resolve-and-normalize-units
+  "Resolve all units with prefixes, and normalized the result"
+  [u]
+  (-> u resolve-unit-prefixes normalize-units))
+
+;; =================================================================
+;; unit conversion
+
+(defn convert
+  "Converts a fjv to a given unit, will resolve and normalize. Will reverse if units 'mirrored'"
+  [fj u]
+  (when @*debug* (println "convert" fj u))
+  (let [nf (resolve-and-normalize-units (:u fj))
+        nfj (fjv. (* (:v nf) (:v fj)) (:u nf))
+        nu (resolve-and-normalize-units u)]
+    (when @*debug* (println " convert post-norm" nfj nu))
+    (if (= (:u nfj) (:u nu))
+      (fj-div nfj nu)
+      (if (= (:u (fj-inverse nfj)) (:u nu))
+        (fj-div (fj-inverse nfj) nu)
+        (throw (Exception. "cannot convert to a different unit"))))))

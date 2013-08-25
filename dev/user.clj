@@ -10,9 +10,10 @@
    [clojure.set :as set]
    [clojure.string :as str]
    [clojure.test :as test]
-   [clojure.tools.namespace.repl :refer (refresh refresh-all)]
-   [frinj.repl])
-  (:import frinj.core.fjv))
+   [clojure.tools.namespace.repl :refer (refresh refresh-all)])
+  (:use [frinj.core :exclude [add-unit! zero one]]
+        [frinj.ops]
+        [frinj.feeds]))
 
 (def system
   "A Var containing an object representing the application under
@@ -28,12 +29,14 @@
 (defn start
   "Starts the system running, updates the Var #'system."
   []
+  (frinj-init!)
   )
 
 (defn stop
   "Stops the system if it is currently running, updates the Var
   #'system."
   []
+  (shutdown-feeds)
   )
 
 (defn go

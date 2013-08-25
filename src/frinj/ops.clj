@@ -1,18 +1,30 @@
-;;  Copyright (c) Martin Trojer. All rights reserved.
-;;  The use and distribution terms for this software are covered by the
-;;  Eclipse Public License 1.0 (http://opensource.org/licenses/eclipse-1.0.php)
-;;  which can be found in the file epl-v10.html at the root of this distribution.
-;;  By using this software in any fashion, you are agreeing to be bound by
-;;  the terms of this license.
-;;  You must not remove this notice, or any other, from this software.
-
-(ns frinj.calc
-  (:use [frinj.core]
-        [frinj.utils]
-        [frinj.parser])
+(ns frinj.ops
+  (:require [frinj.core :as core]
+            [frinj.parser :as parser]
+            [frinj.feeds :as feeds]
+            [clojure.java.io :as io])
   (:import frinj.core.fjv))
 
+(def ^:private unit-clj-file (io/resource "units.clj"))
+(def ^:private unit-txt-file (io/resource "units.txt"))
+
+(defn frinj-init!
+  "Init the frinj envrionment. Will try to load the clj-unit file - if that fails the unit.txt file"
+  []
+  (reset! core/state (-> unit-clj-file slurp read-string))
+  (feeds/setup-feeds)
+  :done)
+
+(defn load-unit-txt-file!
+  "Resets the states and loads units from the frink units.txt file"
+  []
+  (core/reset-state!)
+  (with-open [rdr (io/reader unit-txt-file)]
+    (doseq [line (line-seq rdr)]
+      (-> line parser/tokenize parser/parse!))))
+
 ;; =================================================================
+;; fjv creation and conversion
 
 (defn- get-seconds
   "Get number of seconds since EPOC given a yyyy-mm-dd datestring"
@@ -24,7 +36,7 @@
 (defn- map-fj-operators
   "Maps (fj) operators to tokens"
   [os]
-  (when @*debug* (println "map-fj-ops" os))
+  (when @core/*debug* (println "map-fj-ops" os))
   (loop [acc [], to nil, [fst snd & rst] os]
     (let [r (into rst [snd])]
       (if-not (nil? fst)
@@ -47,70 +59,65 @@
           :else (throw (Exception. (str "unsupported operator " fst))))
         [acc to]))))
 
+;; =================================================================
+;; Operators
+
+(def add-unit! core/add-unit!)
+(def one core/one)
+(def zero core/zero)
+
 (defn fj
   "Convenience function to build fjv's"
-  ([] one)
+  ([] core/one)
   ([& os]
      (let [[toks to] (map-fj-operators os)
-           [u fact _] (eat-units toks)
-           fj (resolve-and-normalize-units u)
+           [u fact _] (parser/eat-units toks)
+           fj (core/resolve-and-normalize-units u)
            res (fjv. (* fact (:v fj)) (:u fj))]
        (if to
-         (clean-units (convert res {to 1}))
+         (core/clean-units (core/convert res {to 1}))
          res))))
 
 (defn to
   "Convert a fjv to a unit. Unit is specified with (fj) ops"
   [fj & os]
-  (when @*debug* (println "to" fj os))
+  (when @core/*debug* (println "to" fj os))
   (let [[toks _] (map-fj-operators os)
-        [u fact] (eat-units toks)
-        cfj (convert fj u)
+        [u fact] (parser/eat-units toks)
+        cfj (core/convert fj u)
         res (fjv. (/ (:v cfj) fact) (:u cfj))]
-    (clean-units res)))
+    (core/clean-units res)))
 
 (defn to-date
   "Convert a fj of units {s 1} to a date string"
   [fj]
-  (let [fj (clean-units fj)]
+  (let [fj (core/clean-units fj)]
     (if (= (:u fj) {"s" 1})
       (let [date (java.util.Date. (long  (* 1000 (:v fj))))]
         (str date))
       (throw (Exception. "cannot convert type to a date")))))
 
-;; =================================================================
+(def fj+ core/fj-add)
+(def fj- core/fj-sub)
+(def fj* core/fj-mul)
+(def fj_ core/fj-div)           ;; can't find a better character for div!
+(def fj** core/fj-int-pow)
+(def fj= core/fj-equal?)
+(def fj< core/fj-less?)
+(def fj> core/fj-greater?)
+(def fj<= core/fj-less-or-equal?)
+(def fj>= core/fj-greater-or-equal?)
 
-(def unit-clj-file (clojure.java.io/resource "units.clj"))
-(def unit-txt-file (clojure.java.io/resource "units.txt"))
+(defn override-operators! []
+  (eval '(do
+           (def + fj+)
+           (def - fj-)
+           (def * fj*)
+           (def / fj_)
+           (def < fj<)
+           (def > fj>)
+           (def <= fj<=)
+           (def >= fj>=)))
 
-(defn load-unit-txt-file!
-  "Resets the states and loads units from the frink units.txt file"
-  []
-  (reset-state!)
-  (with-open [rdr (clojure.java.io/reader unit-txt-file)]
-    (doseq [line (line-seq rdr)]
-      (-> line (tokenize) parse!))))
-
-;; =================================================================
-
-(defn frinj-init!
-  "Init the frinj envrionment. Will try to load the clj-unit file - if that fails the unit.txt file"
-  []
-  (try
-    (import-state! (slurp unit-clj-file))
-    (catch Exception e
-      (load-unit-txt-file!))))
-
-;; =================================================================
-;; Convenient operator names
-
-(def fj+ fj-add)
-(def fj- fj-sub)
-(def fj* fj-mul)
-(def fj_ fj-div)           ;; can't find a better character for div!
-(def fj** fj-int-pow)
-(def fj= fj-equal?)
-(def fj< fj-less?)
-(def fj> fj-greater?)
-(def fj<= fj-less-or-equal?)
-(def fj>= fj-greater-or-equal?)
+  (defmethod clojure.core/print-method frinj.core.fjv [x writer]
+    (.write writer (str x))))
