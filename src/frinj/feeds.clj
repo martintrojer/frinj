@@ -15,16 +15,19 @@
 
 ;; =================================================================
 
-(def feed-pool (atom (ScheduledThreadPoolExecutor. 1)))
+(def feed-pool (atom nil))
 
 (defn start-feed
   "Schedule a feed"
   [f period scale]
+  (when-not @feed-pool
+    (reset! feed-pool (ScheduledThreadPoolExecutor. 1)))
   (.scheduleAtFixedRate @feed-pool f 0 period scale))
 
 (defn stop-feed
   [f]
-  (.cancel f true))
+  (when @feed-pool
+    (.cancel f true)))
 
 (defn restart-feed [f period scale]
   (try
@@ -35,7 +38,9 @@
 (defn shutdown-feeds
   "Shutdown all scheduled feeds"
   []
-  (.shutdown @feed-pool))
+  (when @feed-pool
+    (.shutdown @feed-pool)
+    (reset! feed-pool nil)))
 
 ;; =================================================================
 
