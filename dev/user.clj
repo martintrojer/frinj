@@ -10,6 +10,7 @@
    [clojure.set :as set]
    [clojure.string :as str]
    [clojure.test :as test]
+   [clojure.tools.trace :refer (trace deftrace trace-forms trace-ns trace-vars)]
    [clojure.tools.namespace.repl :refer (refresh refresh-all)])
   (:use [frinj.core :exclude [add-unit! zero one]]
         [frinj.ops]
