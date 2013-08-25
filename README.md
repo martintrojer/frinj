@@ -31,7 +31,6 @@ Pull the dependencies and start the REPL
 
 ```sh
 $ cd frinj-example
-$ lein deps
 $ lein repl
 ```
 
