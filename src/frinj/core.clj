@@ -6,7 +6,8 @@
 ;;  the terms of this license.
 ;;  You must not remove this notice, or any other, from this software.
 
-(ns frinj.core)
+(ns frinj.core
+  (:require [clojure.java.io :as io]))
 
 (def ^:dynamic *debug* (atom false))
 (defn enable-debug! [] (reset! *debug* true))
@@ -25,6 +26,11 @@
            :standalone-prefixes {}
            :fundamental-units {}
            :fundamentals #{}}))
+
+(def ^:private unit-clj-file (io/resource "units.clj"))
+
+(defn restore-state! []
+  (reset! state (-> unit-clj-file slurp read-string)))
 
 ;; ------------------------
 ;; manipulate the state

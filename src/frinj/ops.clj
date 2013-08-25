@@ -5,15 +5,14 @@
             [clojure.java.io :as io])
   (:import frinj.core.fjv))
 
-(def ^:private unit-clj-file (io/resource "units.clj"))
-(def ^:private unit-txt-file (io/resource "units.txt"))
-
 (defn frinj-init!
   "Init the frinj envrionment. Will try to load the clj-unit file - if that fails the unit.txt file"
   []
-  (reset! core/state (-> unit-clj-file slurp read-string))
+  (core/restore-state!)
   (feeds/setup-feeds)
   :done)
+
+(def ^:private unit-txt-file (io/resource "units.txt"))
 
 (defn load-unit-txt-file!
   "Resets the states and loads units from the frink units.txt file"
@@ -96,6 +95,15 @@
       (let [date (java.util.Date. (long  (* 1000 (:v fj))))]
         (str date))
       (throw (Exception. "cannot convert type to a date")))))
+
+(defn find-units [s]
+  (let [pat (re-pattern s)]
+    (->> @core/state :units
+         (filter #(re-find pat (first %))))))
+
+(defn list-fundamentals []
+  (let [fus (->> @core/state :fundamental-units)]
+    (zipmap (vals fus) (keys fus))))
 
 (def fj+ core/fj-add)
 (def fj- core/fj-sub)
