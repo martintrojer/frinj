@@ -24,7 +24,7 @@ Add the following line to the dependency list in `frinj-example/project.clj`:
 ```clj
 (defproject frinj-example "1.0"
   :dependencies [[org.clojure/clojure "1.5.1"]
-                 [frinj "0.1.5"]])
+                 [frinj "0.2.0"]])
 ```
 
 Pull the dependencies and start the REPL
@@ -38,7 +38,8 @@ $ lein repl
 Reference and initialize the Frinj calculator
 
 ```clj
-user=> (use 'frinj.repl)
+user=> (use 'frinj.ops)
+user=> (frinj-init!)
 ```
 
 Start calculating!

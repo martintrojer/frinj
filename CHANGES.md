@@ -1,3 +1,27 @@
+0.2.0
+===
+
+Features
+---
+
+* Breaking namespace changes
+
+utils -> core
+calc, repl -> ops
+
+* New operators
+
+find-units, find-fundamentals
+
+0.1.5
+===
+
+Fixes
+---
+
+* Clojure 1.5.1
+* Some cleanup
+
 0.1.4
 ===
 
