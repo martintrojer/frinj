@@ -4,7 +4,7 @@
   (:require
    [clojure.java.io :as io]
    [clojure.java.javadoc :refer (javadoc)]
-   [clojure.pprint :refer (pprint)]
+   [clojure.pprint :refer (pprint print-table)]
    [clojure.reflect :refer (reflect)]
    [clojure.repl :refer (apropos dir doc find-doc pst source)]
    [clojure.set :as set]

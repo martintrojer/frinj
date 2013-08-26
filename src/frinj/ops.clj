@@ -107,13 +107,15 @@
 (defn find-units [s]
   (let [pat (re-pattern s)]
     (->> @core/state :units
-         (filter #(re-find pat (first %))))))
+         (filter #(re-find pat (first %)))
+         (map (fn [[n u]] {:name n :unit (str u)})))))
 
 (defn find-fundamentals [s]
   (let [fus (->> @core/state :fundamental-units)
         pat (re-pattern s)]
     (->> (zipmap (vals fus) (keys fus))
-         (filter #(re-find pat (first %))))))
+         (filter #(re-find pat (first %)))
+         (map (fn [[n us]] {:name n :unit us})))))
 
 (def fj+ core/fj-add)
 (def fj- core/fj-sub)

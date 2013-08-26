@@ -17,12 +17,7 @@
 ;; =================================================================
 ;; The core "Number" class
 
-(defn- clean-us
-  "Remove all zero-values entries"
-  [m]
-  (->> m
-       (remove (fn [[_ v]] (zero? v)))
-       (into {})))
+(declare clean-us)
 
 ;; fjv is the core type representing values w/ UOM.
 ;; :v is the value
@@ -109,6 +104,13 @@
 
 ;; =================================================================
 ;; Helpers
+
+(defn- clean-us
+  "Remove all zero-values entries"
+  [m]
+  (->> m
+       (remove (fn [[_ v]] (zero? v)))
+       (into {})))
 
 (defn clean-units
   "Remove 0-ed units from a fjv"
