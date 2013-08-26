@@ -1,3 +1,11 @@
+0.2.1
+===
+
+Fixes
+---
+
+* better output from find-units and find-fundamentals
+
 0.2.0
 ===
 
