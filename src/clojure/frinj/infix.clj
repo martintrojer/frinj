@@ -28,7 +28,7 @@
 (ns ^{:doc "Library for converting infix mathematical formula to prefix expressions"
        :author "J. Bester"}
   frinj.infix
-  (:use [frinj.core]))
+  (:use [frinj.common.core]))
 
 ;; operator precedence for formula macro
 (def +precedence-table+ (ref {}))

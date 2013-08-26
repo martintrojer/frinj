@@ -14,6 +14,7 @@
    [clojure.tools.namespace.repl :refer (refresh refresh-all)])
   (:use [frinj.core :exclude [add-unit! zero one]]
         [frinj.ops]
+        [frinj.jvm]
         [frinj.feeds]))
 
 (def system

@@ -10,7 +10,8 @@
   (:use [clojure.test]
         [frinj.core :only [state reset-state! lookup-prefix]]
         [frinj.ops]
-        [frinj.parser])
+        [frinj.parser]
+        [frinj.jvm])
   (:import frinj.core.fjv))
 
 (defn- parser-test-fixture [f]

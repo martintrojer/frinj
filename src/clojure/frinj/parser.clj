@@ -242,3 +242,10 @@
                 :else (recur (conj acc fst) r))))]
 
     (do-parse [] toks)))
+
+(defn restore-state-from-text!
+  "Restores state by parsing a blob of Frink code"
+  [txt]
+  (reset-state!)
+  (doseq [line (line-seq txt)]
+    (-> line tokenize parse!)))

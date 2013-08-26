@@ -8,37 +8,13 @@
 
 (ns frinj.ops
   (:require [frinj.core :as core]
-            [frinj.parser :as parser]
-            [frinj.feeds :as feeds]
-            [clojure.java.io :as io])
+            [frinj.parser :as parser])
   (:import frinj.core.fjv))
 
-(defn frinj-init!
-  "Init the frinj envrionment. Will try to load the clj-unit file - if that fails the unit.txt file"
-  []
-  (core/restore-state!)
-  (feeds/setup-feeds)
-  :done)
-
-(def ^:private unit-txt-file (io/resource "units.txt"))
-
-(defn load-unit-txt-file!
-  "Resets the states and loads units from the frink units.txt file"
-  []
-  (core/reset-state!)
-  (with-open [rdr (io/reader unit-txt-file)]
-    (doseq [line (line-seq rdr)]
-      (-> line parser/tokenize parser/parse!))))
+(def ^:dynamic *get-seconds* identity)
 
 ;; =================================================================
 ;; fjv creation and conversion
-
-(defn- get-seconds
-  "Get number of seconds since EPOC given a yyyy-mm-dd datestring"
-  [ds]
-  (let [df (java.text.SimpleDateFormat. "yyyy-MM-dd")
-        date (if (= (.toLowerCase ds) "now") (java.util.Date.) (.parse df ds))]
-    (/ (.getTime date) 1000)))
 
 (defn- map-fj-operators
   "Maps (fj) operators to tokens"
@@ -59,7 +35,7 @@
           (string? fst) (recur (conj acc [:unit fst]) to r)
           (keyword? fst) (let [name (name fst)]
                            (if (.startsWith name "#")
-                             (recur (into acc [[:number (get-seconds (.substring name 1))]
+                             (recur (into acc [[:number (*get-seconds* (.substring name 1))]
                                                [:unit "s"]])
                                     to r)
                              (recur (conj acc [:unit name]) to r)))
@@ -95,15 +71,6 @@
         res (fjv. (/ (:v cfj) fact) (:u cfj))]
     (core/clean-units res)))
 
-(defn to-date
-  "Convert a fj of units {s 1} to a date string"
-  [fj]
-  (let [fj (core/clean-units fj)]
-    (if (= (:u fj) {"s" 1})
-      (let [date (java.util.Date. (long  (* 1000 (:v fj))))]
-        (str date))
-      (throw (Exception. "cannot convert type to a date")))))
-
 (defn find-units [s]
   (let [pat (re-pattern s)]
     (->> @core/state :units
@@ -127,17 +94,3 @@
 (def fj> core/fj-greater?)
 (def fj<= core/fj-less-or-equal?)
 (def fj>= core/fj-greater-or-equal?)
-
-(defn override-operators! []
-  (eval '(do
-           (def + fj+)
-           (def - fj-)
-           (def * fj*)
-           (def / fj_)
-           (def < fj<)
-           (def > fj>)
-           (def <= fj<=)
-           (def >= fj>=)))
-
-  (defmethod clojure.core/print-method frinj.core.fjv [x writer]
-    (.write writer (str x))))

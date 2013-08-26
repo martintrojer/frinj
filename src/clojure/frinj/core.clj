@@ -6,8 +6,7 @@
 ;;  the terms of this license.
 ;;  You must not remove this notice, or any other, from this software.
 
-(ns frinj.core
-  (:require [clojure.java.io :as io]))
+(ns frinj.core)
 
 (def ^:dynamic *debug* (atom false))
 (defn enable-debug! [] (reset! *debug* true))
@@ -39,6 +38,26 @@
 ;; =================================================================
 ;; manipulate the state
 
+(defn reset-state!
+  "Total reset of the core unit states (to empty)"
+  []
+  (reset! state
+          {:units {}
+           :prefixes {}
+           :standalone-prefixes {}
+           :fundamental-units {}
+           :fundamentals #{}}))
+
+(defn restore-state!
+  "Restores state given a units.edn data structure"
+  [data]
+  (let [map->fjv (fn [[n m]] [n (fjv. (:v m) (:u m))])]
+    (reset! state
+            (assoc data
+              :units (->> data :units (map map->fjv) (into {}))
+              :prefixes (->> data :prefixes (map map->fjv) (into {}))
+              :standalone-prefixes (->> data :standalone-prefixes (map map->fjv) (into {}))))))
+
 (defn add-with-plurals!
   "Adds a unit to the state (and it's potential plural)"
   [k uname fj]
@@ -52,27 +71,6 @@
   "Adds a unit to the state"
   [name fj]
   (add-with-plurals! :units name fj))
-
-(defn reset-state!
-  "Total reset of the core unit states (to empty)"
-  []
-  (reset! state
-          {:units {}
-           :prefixes {}
-           :standalone-prefixes {}
-           :fundamental-units {}
-           :fundamentals #{}}))
-
-(def ^:private unit-clj-file (io/resource "units.edn"))
-
-(defn restore-state! []
-  (let [map->fjv (fn [[n m]] [n (fjv. (:v m) (:u m))])
-        d (-> unit-clj-file slurp read-string)]
-    (reset! state
-            (assoc d
-              :units (->> d :units (map map->fjv) (into {}))
-              :prefixes (->> d :prefixes (map map->fjv) (into {}))
-              :standalone-prefixes (->> d :standalone-prefixes (map map->fjv) (into {}))))))
 
 (defn export-state []
   (let [fjv->map (fn [[n fj]] [n (into {} fj)])]

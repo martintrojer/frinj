@@ -8,6 +8,7 @@
 
 (ns frinj.test.samplecalc
   (:use [clojure.test]
+        [frinj.jvm]
         [frinj.ops])
   (:import frinj.core.fjv))
 
