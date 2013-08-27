@@ -8,13 +8,19 @@
 
 (ns frinj.ops
   (:require [frinj.core :as core]
+            [frinj.cross :as cross]
             [frinj.parser :as parser])
   (:import frinj.core.fjv))
 
-(def ^:dynamic *get-seconds* identity)
-
 ;; =================================================================
 ;; fjv creation and conversion
+
+(defn- get-seconds
+  "Get number of seconds since EPOC given a yyyy-mm-dd datestring"
+  [ds]
+  (let [df (java.text.SimpleDateFormat. "yyyy-MM-dd")
+        date (if (= (.toLowerCase ds) "now") (java.util.Date.) (.parse df ds))]
+    (/ (.getTime date) 1000)))
 
 (defn- map-fj-operators
   "Maps (fj) operators to tokens"
@@ -30,16 +36,16 @@
                         (let [tos (name snd)]
                           (if-not (= tos "to")
                             (recur acc tos rst)
-                            (throw (Exception. "invalid to target"))))
-                        (throw (Exception. "invalid to target")))
+                            (cross/throw-exception "invalid to target")))
+                        (cross/throw-exception "invalid to target"))
           (string? fst) (recur (conj acc [:unit fst]) to r)
           (keyword? fst) (let [name (name fst)]
-                           (if (.startsWith name "#")
-                             (recur (into acc [[:number (*get-seconds* (.substring name 1))]
+                           (if (cross/starts-with name "#")
+                             (recur (into acc [[:number (get-seconds (cross/sub-string name " "))]
                                                [:unit "s"]])
                                     to r)
                              (recur (conj acc [:unit name]) to r)))
-          :else (throw (Exception. (str "unsupported operator " fst))))
+          :else (cross/throw-exception (str "unsupported operator " fst)))
         [acc to]))))
 
 ;; =================================================================
@@ -70,6 +76,15 @@
         cfj (core/convert fj u)
         res (fjv. (/ (:v cfj) fact) (:u cfj))]
     (core/clean-units res)))
+
+(defn to-date
+  "Convert a fj of units {s 1} to a date string"
+  [fj]
+  (let [fj (core/clean-units fj)]
+    (if (= (:u fj) {"s" 1})
+      (let [date (java.util.Date. (long  (* 1000 (:v fj))))]
+        (str date))
+      (cross/throw-exception "cannot convert type to a date"))))
 
 (defn find-units [s]
   (let [pat (re-pattern s)]

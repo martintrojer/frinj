@@ -6,7 +6,8 @@
 ;;  the terms of this license.
 ;;  You must not remove this notice, or any other, from this software.
 
-(ns frinj.core)
+(ns frinj.core
+  (:require [frinj.cross :as cross]))
 
 (def ^:dynamic *debug* (atom false))
 (defn enable-debug! [] (reset! *debug* true))
@@ -26,7 +27,7 @@
 (defrecord fjv [v u]
   Object
   (toString [this]
-    (str (if (ratio? v) (str v " (approx. " (double v) ")") v) " "
+    (str (if (cross/ratio? v) (str v " (approx. " (double v) ")") v) " "
          (str
           (reduce (fn [acc [k v]] (str acc (if (= v 1) (str k " ") (str k "^" v " "))))
                   "" (->> u clean-us (into (sorted-map))))
@@ -124,7 +125,7 @@
   "Enforce all fjs' units are the same"
   [fjs]
   (when (> (->> fjs (map :u) (map clean-us) set count) 1)
-    (throw (Exception. "Cannot use operator on units with different dimensions"))))
+    (cross/throw-exception "Cannot use operator on units with different dimensions")))
 
 ;; =================================================================
 ;; Primitve math functions
@@ -182,7 +183,7 @@
     (if (pos? exp)
       (reduce (fn [acc _] (fj-mul acc fj)) one (range exp))
       (reduce (fn [acc _] (fj-div acc fj)) one (range (- exp))))
-    (throw (Exception. "only integers supported"))))
+    (cross/throw-exception "only integers supported")))
 
 (defn fj-equal?
   [& fjs]
@@ -221,12 +222,12 @@
    (when @*debug* (println "resolve" uname))
    (if-let [fj (get-in @state [:units uname])]
      [one uname]     ;; if name = unit, just return the unit
-     (if-let [pfx (->> (filter #(.startsWith uname %) (all-prefix-names))
+     (if-let [pfx (->> (filter #(cross/starts-with uname %) (all-prefix-names))
                        (sort-by #(.length %))
                        reverse
-                       (filter #(contains? (:units @state) (.substring uname (.length %))))
+                       (filter #(contains? (:units @state) (cross/sub-string uname %)))
                        first)]
-       [(lookup-prefix pfx) (.substring uname (.length pfx))]
+       [(lookup-prefix pfx) (cross/sub-string uname pfx)]
        ;; no match, return the uname
        [one uname])))
 
@@ -288,4 +289,4 @@
       (fj-div nfj nu)
       (if (= (:u (fj-inverse nfj)) (:u nu))
         (fj-div (fj-inverse nfj) nu)
-        (throw (Exception. "cannot convert to a different unit"))))))
+        (cross/throw-exception "cannot convert to a different unit")))))
