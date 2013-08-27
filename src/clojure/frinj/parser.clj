@@ -7,7 +7,7 @@
 ;;  You must not remove this notice, or any other, from this software.
 
 (ns frinj.parser
-  (:use [frinj.core])
+  (:require [frinj.core :as core])
   (:import frinj.core.fjv))
 
 (def ^{:dynamic true} *trace* (atom false))  ;; trace parse results
@@ -118,7 +118,7 @@
   (loop [acc {}, acc-fact 1, s :n, in-par false,
          [[t1 v1] [t2 _ :as snd] & rst :as toks] toks]
 
-    (when @*debug* (println "eat-units" acc acc-fact s in-par toks))
+    (when @core/*debug* (println "eat-units" acc acc-fact s in-par toks))
     (let [r (into rst [snd])
           old (get acc v1)
           old (if (nil? old) 0 old)]
@@ -162,20 +162,20 @@
   [toks]
   (letfn [
           (eat-prefix [[[t v :as fst] & rst]]
-            (when @*debug* (println "eat-prefix" fst))
+            (when @core/*debug* (println "eat-prefix" fst))
             (cond
               (= t :number)
               (let [[n rst] (eat-number (into rst [fst]))]
                   (if (= (ffirst rst) :unit)
                     ;; name ::- number unit+
                     (let [[u fact rst] (eat-units rst)]
-                      (when @*debug* (println "eat-pfx" u fact))
+                      (when @core/*debug* (println "eat-pfx" u fact))
                       [(fjv. (* fact n) u) rst])
                     ;; name ::- number
                     [(fjv. n {}) rst]))
               (= t :unit)
-              (if (prefix? v)
-                [(lookup-prefix v) rst]
+              (if (core/prefix? v)
+                [(core/lookup-prefix v) rst]
                 (throw (Exception. "trying to assign to unknown prefix")))))
 
           (do-parse [acc [[t1 v1 :as fst] [t2 v2 :as snd] [t3 v3 :as thrd] & rst :as toks]]
@@ -187,25 +187,25 @@
                 ;; prefix definitions
                 (and (= t1 :name) (= t2 :standalone-prefix))
                 (let [[fj rst] (eat-prefix (into rst [thrd]))
-                      rfj (resolve-and-normalize-units (:u fj))
+                      rfj (core/resolve-and-normalize-units (:u fj))
                       nfj (fjv. (* (:v fj) (:v rfj)) (:u rfj))]
                   (when @*trace* (println v1 "::-" nfj))
-                  (add-with-plurals! :standalone-prefixes v1 nfj)
+                  (core/add-with-plurals! :standalone-prefixes v1 nfj)
                   (recur [] rst))
                 (and (= t1 :name) (= t2 :prefix))
                 (let [[fj rst] (eat-prefix (into rst [thrd]))
-                      rfj (resolve-and-normalize-units (:u fj))
+                      rfj (core/resolve-and-normalize-units (:u fj))
                       nfj (fjv. (* (:v fj) (:v rfj)) (:u rfj))]
                   (when @*trace* (println v1 ":-" nfj))
-                  (swap! state assoc-in [:prefixes v1] nfj)
+                  (swap! core/state assoc-in [:prefixes v1] nfj)
                   (recur [] rst))
 
                 ;; fundamentals
                 (and (= t1 :name) (= t2 :fundamental) (= t3 :unit))
                 (let [u {v3 1}]
-                  (swap! state assoc-in [:fundamental-units u] v1)
-                  (swap! state update-in [:fundamentals] #(conj % v3))
-                  (swap! state assoc-in [:units v3] one)
+                  (swap! core/state assoc-in [:fundamental-units u] v1)
+                  (swap! core/state update-in [:fundamentals] #(conj % v3))
+                  (swap! core/state assoc-in [:units v3] core/one)
                   (when @*trace* (println v1 "=!=" u))
                   (recur [] rst))
 
@@ -213,8 +213,8 @@
                 (and (= t1 :unit-combination) (= t2 :unit) (not (empty? acc)))
                 (let [acc (map (fn [[t v]] [(if (= t :name) :unit t) v]) acc)
                       [u _ _] (eat-units acc)
-                      rv (normalize-units (fjv. 1 u))]
-                  (swap! state assoc-in [:fundamental-units (:u rv)] v2)
+                      rv (core/normalize-units (fjv. 1 u))]
+                  (swap! core/state assoc-in [:fundamental-units (:u rv)] v2)
                   (when @*trace* (println v2 "|||" (:u rv)))
                   (recur [] (into rst [thrd])))
 
@@ -223,19 +223,19 @@
                 (and (= t1 :name) (= t2 :assign) (= t3 :number))
                 (let [[n rst] (eat-number (into rst [thrd]))
                       [u fact rst] (eat-units rst)
-                      fj (resolve-and-normalize-units u)
+                      fj (core/resolve-and-normalize-units u)
                       nfact (* fact n (:v fj))
                       nu (:u fj)]
-                  (add-unit! v1 (fjv. nfact nu))
+                  (core/add-unit! v1 (fjv. nfact nu))
                   (when @*trace* (println v1 ":=" nfact nu))
                   (recur [] rst))
                 ;; name := unit+
                 (and (= t1 :name) (= t2 :assign) (= t3 :unit))
                 (let [[u fact rst] (eat-units (into rst [thrd]))
-                      fj (resolve-and-normalize-units u)
+                      fj (core/resolve-and-normalize-units u)
                       nfact (* fact (:v fj))
                       nu (:u fj)]
-                  (add-unit! v1 (fjv. nfact nu))
+                  (core/add-unit! v1 (fjv. nfact nu))
                   (when @*trace* (println v1 ":=" nfact nu ))
                   (recur [] rst))
 
@@ -244,8 +244,8 @@
     (do-parse [] toks)))
 
 (defn restore-state-from-text!
-  "Restores state by parsing a blob of Frink code"
-  [txt]
-  (reset-state!)
-  (doseq [line (line-seq txt)]
+  "Restores state by parsing a sequence of Frink lines"
+  [lines]
+  (core/reset-state!)
+  (doseq [line lines]
     (-> line tokenize parse!)))

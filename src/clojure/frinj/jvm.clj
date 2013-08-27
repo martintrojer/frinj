@@ -32,7 +32,7 @@
   "Resets the states and loads units from the frink units.txt file"
   []
   (with-open [rdr (io/reader unit-txt-file)]
-    (parser/restore-state-from-text! rdr)))
+    (parser/restore-state-from-text! (line-seq rdr))))
 
 (defn- get-seconds
   "Get number of seconds since EPOC given a yyyy-mm-dd datestring"
