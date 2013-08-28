@@ -10,8 +10,7 @@
 ;; Alan Eliasen (@aeliasen) deserves all the praise
 
 (ns frinj.examples
-  (:use [frinj.ops]
-        [frinj.infix]))
+  (:use [frinj.repl]))
 
 ;; setup the environment
 

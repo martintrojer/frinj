@@ -20,6 +20,7 @@
               :builds [{:source-paths ["examples/node"]
                         :compiler {:output-to "frinj.js"
                                    :target :nodejs
-                                   :optimizations :simple
-                                   :pretty-print true}}]}
+                                   :externs ["examples/node/externs.js"]
+                                   :optimizations :advanced
+                                   :pretty-print false}}]}
   )
