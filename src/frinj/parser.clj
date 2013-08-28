@@ -7,7 +7,8 @@
 ;;  You must not remove this notice, or any other, from this software.
 
 (ns frinj.parser
-  (:require [frinj.core :as core])
+  (:require [frinj.core :as core]
+            [frinj.cross :as cross])
   (:import frinj.core.fjv))
 
 (def ^{:dynamic true} *trace* (atom false))  ;; trace parse results
@@ -110,7 +111,7 @@
     ;; num
     (= t1 :number)
     [v1 (into rst [ffth foth thrd snd])]
-    :else (throw (Exception. "parse error, number expected"))))
+    :else (cross/throw-exception "parse error, number expected")))
 
 (defn eat-units
   "Parse a set of tokens accumulating factors and units, frink style syntax with impied muls"
@@ -150,7 +151,7 @@
                                 (* acc-fact v1)
                                 (/ acc-fact v1))
                               (if in-par s :n) in-par r)
-        (= t1 :plus) (throw (Exception. "unexpected operator"))
+        (= t1 :plus) (cross/throw-exception "unexpected operator")
         :else [acc acc-fact toks]))))
 
 ;; the parser mutates the state directly, this is because of the nature of
@@ -176,7 +177,7 @@
               (= t :unit)
               (if (core/prefix? v)
                 [(core/lookup-prefix v) rst]
-                (throw (Exception. "trying to assign to unknown prefix")))))
+                (cross/throw-exception "trying to assign to unknown prefix"))))
 
           (do-parse [acc [[t1 v1 :as fst] [t2 v2 :as snd] [t3 v3 :as thrd] & rst :as toks]]
             ;; (println "parse" toks)

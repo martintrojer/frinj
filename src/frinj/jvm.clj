@@ -14,6 +14,10 @@
             [clojure.java.io :as io])
   (:import frinj.core.fjv))
 
+;; JVM specific implementations and functions
+
+;; cross.clj overrides
+
 (alter-var-root #'cross/starts-with (fn [_] (fn [^String s ^String prefix] (.startsWith s prefix))))
 (alter-var-root #'cross/sub-string (fn [_] (fn [^String s ^String prefix] (.substring s (.length prefix)))))
 (alter-var-root #'cross/ratio? (fn [_] ratio?))

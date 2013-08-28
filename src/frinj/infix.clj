@@ -28,12 +28,12 @@
 (ns ^{:doc "Library for converting infix mathematical formula to prefix expressions"
        :author "J. Bester"}
   frinj.infix
-  (:use [frinj.common.core]))
+  (:use [frinj.core]))
 
 ;; operator precedence for formula macro
 (def +precedence-table+ (ref {}))
 
-;; symbol translation for symbols in formula 
+;; symbol translation for symbols in formula
 ;; (only supports binary operators)
 (def +translation-table+ (ref {}))
 
@@ -92,7 +92,7 @@
 (defn- translate-op
   "Translation of symbol => symbol for binary op allows for
 user defined operators"
-  ([op] 
+  ([op]
      (if (contains? @+translation-table+ op)
        (get @+translation-table+ op)
        op)))
@@ -100,7 +100,7 @@ user defined operators"
 (defn infix-to-prefix
   "Convert from infix notation to prefix notation"
   ([col]
-     (cond 
+     (cond
       ;; handle term only
       (not (seq? col)) col
       ;; handle sequence containing one term (i.e. handle parens)
@@ -113,11 +113,10 @@ user defined operators"
 	       (let [[hd [op & tl]] (split-at lowest col)]
 		 ;; recurse
 		 (list (translate-op op)
-		       (infix-to-prefix hd) 
+		       (infix-to-prefix hd)
 		       (infix-to-prefix tl))))))))
 
 (defmacro $=
   "Convert from infix notation to prefix notation"
   ([& equation]
      (infix-to-prefix equation)))
-

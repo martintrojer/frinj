@@ -5,7 +5,7 @@
   ;; Clojure
 
   :dependencies [[org.clojure/clojure "1.5.1"]]
-  :source-paths ["src/cross" "src/clojure"]
+  :source-paths ["src"]
   :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.4"]
                                   [org.clojure/tools.trace "0.7.6"]]
                    :source-paths ["dev"]}}
@@ -14,8 +14,10 @@
   ;; CLJS / Node.js
 
   :plugins [[lein-cljsbuild "0.3.2"]]
+  :hooks [leiningen.cljsbuild]
   :cljsbuild {:crossovers [frinj.cross frinj.core frinj.ops frinj.parser]
-              :builds [{:source-paths ["src/cross/frinj" "src/cljs/frinj"]
+              :crossover-jar true
+              :builds [{:source-paths ["examples/node"]
                         :compiler {:output-to "frinj.js"
                                    :target :nodejs
                                    :optimizations :simple
