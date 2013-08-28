@@ -1,6 +1,6 @@
-# frinj
+# Frinj
 
-Frinj is a practical unit-of-measure calculator DSL for Clojure.
+Frinj is a practical unit-of-measure calculator DSL for Clojure / ClojureScript.
 
 Key features;
 
@@ -13,45 +13,31 @@ Key features;
 
 ## Usage
 
-Using Leiningen, create a new project
+Add the following line into your Leiningen :dependencies `[frinj "0.2.5"]`.
 
-```sh
-$ lein new frinj-example
-```
+### Clojure
 
-Add the following line to the dependency list in `frinj-example/project.clj`:
-
-```clj
-(defproject frinj-example "1.0"
-  :dependencies [[org.clojure/clojure "1.5.1"]
-                 [frinj "0.2.1"]])
-```
-
-Pull the dependencies and start the REPL
-
-```sh
-$ cd frinj-example
-$ lein repl
-```
-
-Reference and initialize the Frinj calculator
-
-```clj
-user=> (use 'frinj.ops)
+```clojure
+user=> (use 'frinj.repl)
 user=> (frinj-init!)
+user=> (override-operators!)
+user=> (fj 2000 :Calories :per :day :to :watts)
+;; "1163/12 (approx. 96.91666666666667) [dimensionless]"
 ```
 
-Start calculating!
+### ClojureScript
+
+There are a few differences when running Frinj on Node / in a browser. See [this wiki page](https://github.com/martintrojer/frinj/wiki/ClojureScript) for details.
 
 ## Examples
 
-* See [example calculations](https://github.com/martintrojer/frinj/blob/master/src/frinj/examples.clj "example calculations") for ideas...
+* See [example calculations](https://github.com/martintrojer/frinj/blob/master/examples/examples.clj) for ideas...
 
 * [Video of a frinj talk](http://skillsmatter.com/podcast/home/frinj-having-fun-with-units-3861)
 
-* Examples using infix calcuation style [here](https://github.com/martintrojer/frinj/blob/master/src/frinj/examples-infix.clj)
+* Examples using infix calcuation style [here](https://github.com/martintrojer/frinj/blob/master/examples/examples-infix.clj)
 
-* Live units for currencies, precious metals etc, see [simple examples](https://gist.github.com/2036735)
+* Live units for currencies, precious metals etc, [some examples](https://github.com/martintrojer/frinj/wiki/Live-Unit-Feeds#examples)
 
 Finally, check out the [wiki](https://github.com/martintrojer/frinj/wiki) from more info.
 
