@@ -1,3 +1,12 @@
+0.2.5
+===
+
+Features
+---
+* ClojureScript support
+* Node.JS example
+* frinj.repl convenience ns added
+
 0.2.1
 ===
 
