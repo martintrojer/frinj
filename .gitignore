@@ -9,5 +9,5 @@ pom.xml
 *.dot
 *.png
 *~
-frinj.js
+frinj-node.js
 /.lein-repl-history
