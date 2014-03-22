@@ -1,13 +1,13 @@
 out.txt
 pom.xml
 *jar
-/lib/
-/classes/
-/target/
+lib/*
+classes/*
+target/*
 .lein-failures
 .lein-deps-sum
 *.dot
 *.png
 *~
 frinj-node.js
-/.lein-repl-history
+.lein-repl-history
