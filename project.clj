@@ -2,7 +2,7 @@
   :description "Practical unit-of-measure calculator DSL for Clojure"
   :url "https://github.com/martintrojer/frinj"
 
-  :dependencies [[org.clojure/clojure "1.5.1"]]
+  :dependencies [[org.clojure/clojure "1.6.0"]]
 
   ;; Clojure
   :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.4"]
