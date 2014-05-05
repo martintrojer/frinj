@@ -11,3 +11,4 @@ target/*
 *~
 frinj-node.js
 .lein-repl-history
+/.nrepl-port

@@ -53,3 +53,7 @@
   []
   (stop)
   (refresh :after 'user/go))
+
+(defn run-all-my-test []
+  (reset)
+  (test/run-all-tests #"frinj\.*test.*"))
