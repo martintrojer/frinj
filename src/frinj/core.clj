@@ -64,7 +64,7 @@
   [k uname fj]
   (let [uname (name uname)]
     (swap! state assoc-in [k uname] fj)
-    (when-not (or (= \s (last uname)) (= 1 (.length uname)))
+    (when-not (or (= \s (last uname)) (= 1 (count uname)))
       (swap! state assoc-in [k (str uname "s")] fj))
     fj))
 
