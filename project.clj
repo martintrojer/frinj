@@ -2,7 +2,8 @@
   :description "Practical unit-of-measure calculator DSL for Clojure"
   :url "https://github.com/martintrojer/frinj"
 
-  :dependencies [[org.clojure/clojure "1.6.0"]]
+  :dependencies [[org.clojure/clojure "1.6.0"]
+                 [org.clojure/clojurescript "0.0-2371"]]
 
   ;; Clojure
   :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.4"]
@@ -20,5 +21,8 @@
                                    :target :nodejs
                                    :externs ["examples/node/externs.js"]
                                    :optimizations :advanced
-                                   :pretty-print false}}]}
-  )
+                                   :pretty-print false}}
+                       {:source-paths ["examples/browser"]
+                        :compiler {:output-to "browser-example/frinj.js"
+                                   :optimizations :whitespace
+                                   :pretty-print false}}]})
