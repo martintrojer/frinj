@@ -6,7 +6,7 @@
 ;;  the terms of this license.
 ;;  You must not remove this notice, or any other, from this software.
 
-(ns frinj.test.core
+(ns frinj.test.core-test
   (:use [clojure.test]
         [frinj.core])
   (:import frinj.core.fjv))

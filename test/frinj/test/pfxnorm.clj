@@ -61,7 +61,7 @@
 
 (deftest norm-units
   (is (= one                       (normalize-units one)))
-  (is (= (fjv. 1 {"m" 1 "s" -1}))) (normalize-units (fjv. 1 {"m" 1 "s" -1}))
+  (is (= (fjv. 1 {"m" 1 "s" -1})   (normalize-units (fjv. 1 {"m" 1 "s" -1}))))
   (is (= (fjv. 3.14 {})            (normalize-units (fjv. 1 {"pi" 1}))))
   (is (= (fjv. (* 3.14 3.14) {})   (normalize-units (fjv. 1 {"pi" 2}))))
   (is (= (fjv. (/ 1 3.14) {})      (normalize-units (fjv. 1 {"pi" -1}))))

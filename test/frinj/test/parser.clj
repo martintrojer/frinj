@@ -97,7 +97,7 @@
   (is (= "volume"                        (get-in @state [:fundamental-units {"m" 3}])))
   (is (= "energy"                        (get-in @state [:fundamental-units {"m" 2 "kg" 1 "s" -2}])))
   (is (= "electric_charge_density"       (get-in @state [:fundamental-units {"A" 1 "s" 1 "m" -3}])))
-  (is (= "moment_of_inertia")            (get-in @state [:fundamental-units {"m" 2 "kg" 1}]))
+  (is (= "moment_of_inertia"             (get-in @state [:fundamental-units {"m" 2 "kg" 1}])))
   )
 
 (deftest parsed-prefixes
