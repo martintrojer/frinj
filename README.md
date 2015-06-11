@@ -31,6 +31,8 @@ There are a few differences when running Frinj on Node / in a browser. See [this
 
 #### Browser demo
 
+[Visit the browser demo here](http://martintrojer.github.io/frinj-demo/)
+
 To generate the browser demo, run `lein cljsbuild once`. Then start a web server in the [browser-example](browser-example) directory, and visit it. You should see the examples page.
 
 For example;
