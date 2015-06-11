@@ -4,11 +4,13 @@ pom.xml
 lib/*
 classes/*
 target/*
+out/*
 .lein-failures
 .lein-deps-sum
 *.dot
 *.png
 *~
+browser-example/frinj.js
 frinj-node.js
 .lein-repl-history
 /.nrepl-port

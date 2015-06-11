@@ -1,0 +1,1145 @@
+<!doctype>
+<head>
+  <title>Frinj ClojureScript demo</title>
+  <script src="Scrubbing.min.js" type="text/javascript"></script>
+  <script src="frinj.js" type="text/javascript"></script>
+  <link href="demo.css" rel="stylesheet">
+</head>
+<body>
+  <h1 id="top">Frinj ClojureScript demo</h1>
+
+  <nav>
+    <ol>
+      <li><a href="#mass-and-volume">Mass and volume</a></li>
+      <li><a href="#liquor">Liquor</a></li>
+      <li><a href="#more-liquor">More liquor</a></li>
+      <li><a href="#movie-magic">Movie magic</a></li>
+      <li><a href="#fiscal-calculations">Fiscal calculations</a></li>
+      <li><a href="#ouch">Ouch!</a></li>
+      <li><a href="#sniping-ebay-auctions">Sniping eBay auctions</a></li>
+      <li><a href="#junkyard-wars">Junkyard Wars</a></li>
+      <li><a href="#body-heat">Body heat</a></li>
+      <li><a href="#microwave-cookery">Microwave cookery</a></li>
+      <li><a href="#why-is-superman-so-lazy">Why is Superman so Lazy?</a></li>
+      <li><a href="#fart-jokes">Fart jokes</a></li>
+      <li><a href="#advanced-farting">Advanced farting</a></li>
+      <li>
+        <a href="#incorrect-facts">Incorrect facts</a>
+        <ol>
+          <li><a href="#qe2">QE2</a></li>
+          <li><a href="#hamburgers-and-cars">Hamburgers and cars</a></li>
+          <li><a href="#biblical-references">Biblical references</a></li>
+          <li><a href="#emc2">E=mc<sup>2</sup></a></li>
+        </ol>
+      </li>
+    </ol>
+  </nav>
+
+  <h2 id="mass-and-volume">Mass and volume <a href="#mass-and-volume">#</a> <a href="#top">&#8679;</a></h2>
+
+  <aside>
+    Welcome! Any numbers that have a dotted underline, like this
+    <span data-key="intro">2</span>, can be dragged to the side to change their value. The
+    examples will then re-evaluate, and any output text in bold, like
+    <em>this</em> <output for="intro">2</output>, will change too.
+  </aside>
+
+  <p>
+    Let's say you wanted to fill your bedroom up with water. How much water would it take?
+    Let's say your room measures <span data-key="example-0-0">10</span> feet by
+    <span data-key="example-0-1">2</span> feet wide by
+    <span data-key="example-0-2">8</span> feet high.
+  </p>
+
+  <p class="example">
+    <code id="example-0">
+      (-> (fj <output for="example-0-0">10</output> :feet <output for="example-0-1">12</output> :feet <output for="example-0-2">8</output> :feet :to :gallons) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 7181.298701298701 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    It would take approximately <output for="example-0">7,181</output> gallons to fill it.
+    How much would that weigh, if you filled it with water?  Frinj has the unit
+    <code>:water</code> which stands for the density of water.
+  </p>
+
+  <p class="example">
+    <code id="example-1">
+      (-> (fj <output for="example-0-0">10</output> :feet <output for="example-0-1">12</output> :feet <output for="example-0-2">8</output> :feet :water :to :pounds) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 59930.842153098834 [dimensionless]
+    </code>
+  </p>
+
+  <aside>
+    <a href="https://github.com/martintrojer/frinj">Frinj</a>, written by
+    <a href="http://martintrojer.github.io/">Martin Trojer</a>, is a port of
+    <a href="https://futureboy.us/frinkdocs/">Frink</a>, written by
+    <a href="https://futureboy.us/">Alan Eliasen</a>. The examples were also written by
+    Alan Eliasen, except where they say otherwise.
+  </aside>
+
+  <p>
+    So it would weigh almost <output for="example-1">60,000</output> pounds. What if you
+    knew that your floor could only support <span data-key="example-2-0">2</span> tons?
+    How deep could you fill the room with water?
+  </p>
+
+  <p class="example">
+    <code id="example-2">
+      (-> (fj_ (fj <output for="example-2-0">2</output> :tons)
+          (fj <output for="example-0-0">10</output> :feet <output for="example-0-1">12</output> :feet :water))
+      (to :feet) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 0.5339487791320046 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    So you could only fill it about <output for="example-2">0.53</output> feet deep. It'll
+    be a pretty sad pool party.
+  </p>
+
+  <h2 id="liquor">Liquor <a href="#liquor">#</a> <a href="#top">&#8679;</a></h2>
+
+  <p>
+    Let's say you want to define a new unit representing the amount of alcohol in a can of
+    (quality) <span data-key="example-4-0" data-step="0.1">3.2</span> beer. Keep in mind
+    that <output for="example-4-0" class="normal">3.2</output> beer is measured by
+    alcohol/weight, while almost all other liquors (and many beers) are usually measured
+    in alcohol/volume. The density ratio between water and alcohol is given by:
+  </p>
+
+  <p class="example">
+    <code>
+      (-> (fj :water :per :alcohol) str)
+    </code>
+    <code id="example-3" class="hidden">
+      (-> (fj <output for="example-4-0">3.2</output> :water :per :alcohol) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 1.2669453946534905 [dimensionless]
+    </code>
+  </p>
+
+  <aside>
+    Unit definitions, where they depend on scrubbed values, will also recalculate &mdash;
+    even when they don't show any of their own output.
+  </aside>
+
+  <p>
+    Water is thus 1.267 times denser than alcohol.
+    <output for="example-4-0" class="normal">3.2</output> beer (measured by weight) is
+    thus actually <output for="example-3">4</output> percent alcohol as measured by
+    volume. Now let's set that variable in terms of a beer's density of alcohol per volume
+    so we can compare:
+  </p>
+
+  <p class="example">
+    <code id="example-4" data-next="example-5" class="unit">
+      (add-unit! :beer (fj 12 :floz <output for="example-4-0">3.2</output> :percent :water :per :alcohol))
+    </code>
+  </p>
+
+  <p>
+    Then, you wanted to find out how many beers a big bottle of champagne is equal to:
+  </p>
+
+  <p class="example">
+    <code id="example-5">
+      (-> (fj :magnum 13.5 :percent :to :beer) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 14.07449256252434 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    You probably don't want to drink that whole bottle. Now let's say you're mixing Jungle
+    Juice (using a <span data-key="example-6-0" data-step="0.25">1.75</span> liter bottle
+    of Everclear (<span data-key="example-6-1">190</span> proof!)) and Kool-Aid to fill
+    a <span data-key="example-6-2">5</span>-gallon bucket (any resemblance to my college
+    parties is completely intentional). What percent alcohol is that stuff?
+  </p>
+
+  <p class="example">
+    <code id="example-6" data-next="example-7" class="unit">
+      (add-unit! :junglejuice
+                 (fj_ (fj <output for="example-6-0">1.75</output> :liter <output for="example-6-1">190</output> :proof) (fj <output for="example-6-2">5</output> :gallon)))
+    </code>
+  </p>
+
+  <p class="example">
+    <code id="example-7" data-next="example-8">
+      (-> (fj :junglejuice :to :percent) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 8.783720740908436 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    It's really not that strong. About <output for="example-7" data-dp="1">8.8</output>%.
+    But if you drink <span data-key="example-8-0">5</span> cups of that, at
+    <span data-key="example-8-1">12</span> fluid ounces each, how many beers have you had?
+  </p>
+
+  <p class="example">
+    <code id="example-8">
+      (-> (fj <output for="example-8-0">5</output> <output for="example-8-1">12</output> :floz :junglejuice :to :beer) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 10.832798094998477 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    Maybe that's why people were getting punched in the head. QED.
+  </p>
+
+  <h2 id="more-liquor">More liquor <a href="#more-liquor">#</a> <a href="#top">&#8679;</a></h2>
+
+  <p>
+    Some more useful calculations, most thanks to the lovely Steve Clymer:
+  </p>
+
+  <p>
+    How many cases in a keg? (A keg is a normal-sized keg, what those in the beer industry
+    would call a "half barrel," or <code>1/2 :beerbarrel</code> in Frinj notation. I don't
+    think they sell full barrels. I've never seen one. It would weigh 258 pounds. A "pony
+    keg" is a "quarter barrel" or, in Frinj notation, <code>:ponykeg</code> or
+    <code>1/4 :beerbarrel</code>).
+  </p>
+
+  <p>
+    How many <span data-key="example-9-0">12</span> fluid ounce drinks (i.e. cans o' beer)
+    in a keg?
+  </p>
+
+  <p class="example">
+    <code id="example-9">
+      (-> (fj :keg) (to <output for="example-9-0">12</output> :floz) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 165.33333333333334 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    What is the price in dollars per fluid ounce of alcohol when buying a keg of
+    <span data-key="example-10-0" data-step="0.1">3.2</span> beer? (Remember that
+    <output for="example-10-0" class="normal">3.2</output> beer is measured in
+    alcohol/weight, so we correct by the density ratio of water/alcohol to get alcohol by
+    volume:)
+  </p>
+
+  <p class="example">
+    <code id="example-10">
+      (-> (fj_ (fj 60 :dollars)
+               (fj :keg <output for="example-10-0">3.2</output> :percent :water :per :alcohol))
+          (to :dollars :per :floz) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 0.7459362399193548 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    A bottle of cheap wine? (A <code>:winebottle</code> is the standard 750 ml size.)
+  </p>
+
+  <p class="example">
+    <code id="example-11">
+      (-> (fj_ (fj 6.99 :dollars)
+               (fj :winebottle 13 :percent))
+          (to :dollars :per :floz) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 2.1201945809423077 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    A big plastic bottle of really bad vodka?
+  </p>
+
+  <p class="example">
+    <code id="example-12">
+      (-> (fj_ (fj 13.99 :dollars)
+               (fj 1750 :ml 80 :proof))
+          (to :dollars :per :floz) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 0.59104811225625 [dimensionless]
+    </code>
+  </p>
+
+  <h2 id="movie-magic">Movie magic <a href="#movie-magic">#</a> <a href="#top">&#8679;</a></h2>
+
+  <p>
+    In the movie <i>Independence Day</i>, the alien mother ship is said to be
+    <span data-key="example-13-0">500</span> km in diameter and have a mass
+    <span data-key="example-13-1" data-step="0.25">0.25</span> that of earth's moon. If
+    the mother ship were a sphere, what would its density be? (The volume of a sphere is
+    4/3 pi radius<sup>3</sup>)
+  </p>
+
+  <p class="example">
+    <code id="example-13">
+      (-> (fj_ (fj <output for="example-13-1">0.25</output> :moonmass)
+               (fj 4/3 :pi)
+               (fj** (fj <output for="example-13-0">500</output>/2 :km) 3))
+          (to :water) str)
+    </code>
+    <code id="example-14" class="hidden">
+      (-> (fj_ (fj_ (fj <output for="example-13-1">0.25</output> :moonmass)
+                    (fj 4/3 :pi)
+                    (fj** (fj <output for="example-13-0">500</output>/2 :km) 3))
+               7.87)
+          (to :water) str)
+    </code>
+    <code id="example-15" class="hidden">
+      (-> (fj_ (fj_ (fj <output for="example-13-1">0.25</output> :moonmass)
+                    (fj 4/3 :pi)
+                    (fj** (fj <output for="example-13-0">500</output>/2 :km) 3))
+               22.4)
+          (to :water) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 280.68438439732194 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    This makes the ship <output for="example-13">280</output> times denser than water.
+    This is <output for="example-14">280</output> times denser than iron and
+    <output for="example-15">12</output> times denser than any known element! As the ship
+    is actually more a thin disc than a sphere, it would actually be even denser. Since it
+    contains lots of empty space, parts of it would have to be much, much denser.
+  </p>
+
+  <p>
+    If the object is this dense and has such a large mass, what is its surface gravity?
+    Surface gravity is given by G mass / radius<sup>2</sup>, where G is the gravitational
+    constant (which Frinj knows about):
+  </p>
+
+  <p class="example">
+    <code id="example-16">
+      (-> (fj_ (fj :G <output for="example-13-1">0.25</output> :moonmass)
+               (fj** (fj <output for="example-13-0">500</output>/2 :km) 2))
+      (to :gravity) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 2.000331549387406 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    The surface gravity of the spaceship is thus at least
+    <output for="example-16">2</output> times earth's gravity &mdash; and that's on the
+    rim where gravity is weakest. It would actually be much higher since it's much, much
+    flatter than a sphere. I hope you're not the alien that has to go outside and paint
+    it.
+  </p>
+
+  <h2 id="fiscal-calculations">Fiscal calculations <a href="#fiscal-calculations">#</a> <a href="#top">&#8679;</a></h2>
+
+  <aside>
+    Examples which use date calculations can't yet be run in Frinj-in-the-browser. These
+    appear with a grey background.
+  </aside>
+
+  <p>
+    You can calculate the day that your company will run out of cash, based on their
+    financial statements. The following is an example for a real company, based on SEC
+    filings, which read as the following:
+  </p>
+
+  <table summary="Sample financial data">
+    <caption>Cash and Cash Equivalents (in thousands)</caption>
+    <thead>
+      <tr><th>December 31, 2000</th><th>June 30, 2001</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>$86,481</td><td>$41,601</td></tr>
+    </tbody>
+  </table>
+
+  <p class="inactive">
+    <code id="example-17" class="unit">
+      (add-unit! :burnrate
+                 (fj_
+                  (fj (- 86481 41601) :thousand :dollars)
+                  (fj- (fj :#2001-06-30) (fj :#2000-12-31))))
+    </code>
+    <br>
+    <code id="example-18">
+      (-> (to (fj :burnrate) :dollars :per :day) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 248012.8943126871 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    You can calculate the number of days until the money runs out at this rate:
+  </p>
+
+  <p class="inactive">
+    <code id="example-19">
+      (-> (fj_ (fj 41601 :thousand :dollars)
+               (fj :burnrate))
+          (to :days) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 167.7372465463458 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    Using date/time math, starting from the last report date (June 30, 2001) you can find
+    out the exact date this corresponds to:
+  </p>
+
+  <p class="inactive">
+    <code id="example-19">
+      (-> (fj+ (fj :#2001-06-30)
+               (fj_ (fj 41601 :thousand :dollars)
+               (fj :burnrate)))
+          to-date)
+    </code>
+    <br>
+    <code class="result">
+      ;; Fri Dec 14 16:41:38 GMT 2001
+    </code>
+  </p>
+
+  <h2 id="ouch">Ouch! <a href="#ouch">#</a> <a href="#top">&#8679;</a></h2>
+
+  <p>
+    At the moment, I'm watching CNN which is discussing some land-mines used in
+    Afghanistan. They showed a very small mine (about the size of a bran muffin)
+    containing "<span data-key="example-20-0">51</span> grams of TNT" and they asked how
+    much destructive force that carries. Frinj's data file includes how much energy is in
+    a mass of TNT, specified by the unit <code>:TNT</code>. How many feet in the air
+    could <output for="example-20-0" class="normal">51</output> grams of TNT throw me,
+    assuming perfect efficiency, and knowing energy = mass * gravity * height?
+  </p>
+
+  <p class="example">
+    <code id="example-20">
+      (-> (fj <output for="example-20-0">51</output> :grams :TNT) (to 185 :pounds :gravity :feet) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 937.7628167428614 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    Yikes. <output for="example-20">937</output> feet. But the only difference between
+    explosives and other combustible fuels is the rapidity of combustion, not in the
+    quantity of energy. How much gasoline contains the same amount of energy?
+  </p>
+
+  <p class="example">
+    <code id="example-21">
+      (-> (fj <output for="example-20-0">51</output> :grams :TNT) (to :teaspoons :gasoline) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 1.2903255594255887 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    <output for="example-21" data-dp="2">1.29</output> teaspoons? That's not much at all.
+    You're buying a huge amount of energy when you fill up your car.
+  </p>
+
+  <h2 id="sniping-ebay-auctions">Sniping eBay auctions <a href="#sniping-ebay-auctions">#</a> <a href="#top">&#8679;</a></h2>
+
+  <p>
+    I need a monocle, but I don't want to pay a lot for it. The eBay monocle auction ends
+    in 7 hours and 44 minutes... what time do I need to set the alarm clock for to remind
+    me?
+  </p>
+
+  <p class="inactive">
+    <code id="example-22">
+      (-> (fj+ (fj :#now) (fj 7 :hours) (fj 44 :min)) to-date)
+    </code>
+    <br>
+    <code class="result">
+      ;; Sat Nov 17 14:13:51 MST 2001
+    </code>
+  </p>
+
+  <p>
+    <b>Epilogue 2001:</b> I didn't get the damned monocle.
+  </p>
+
+  <h2 id="junkyard-wars">Junkyard Wars <a href="#junkyard-wars">#</a> <a href="#top">&#8679;</a></h2>
+
+  <p>
+    I can't watch <i>Junkyard Wars</i> (or lots of other television shows) without having
+    Frinj at my side. This week the team has to float a submerged half-ton Cooper
+    Mini... how many oil barrels will they need to use as floats?
+  </p>
+
+  <p class="example">
+    <code id="example-23">
+      (-> (fj :half :ton) (to :barrels :water) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 2.853010174211824 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    They're trying to hand-pump air down to the barrels, submerged
+    "<span data-key="example-24-0">2</span> fathoms" below the water. If the guy can
+    sustain <span data-key="example-24-1">40</span> watts of pumping power, how many
+    minutes will it take to fill the barrel?
+  </p>
+
+  <p class="example">
+    <code id="example-24">
+      (-> (fj <output for="example-24-0">2</output> :fathoms :water :gravity :barrel) (to <output for="example-24-1">40</output> :watts :minutes) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 2.376123072093987 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    And how many food Calories (a food Calorie (with a capital "C") equals 1,000 calories
+    with a small "c") will he burn to fill a barrel?
+  </p>
+
+  <p class="example">
+    <code id="example-25">
+      (-> (fj <output for="example-24-0">2</output> :fathoms :water :gravity :barrel :to :Calories) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 1.362065389563764 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    Better eat a Tic-Tac first.
+  </p>
+
+  <h2 id="body-heat">Body heat <a href="#body-heat">#</a> <a href="#top">&#8679;</a></h2>
+
+  <p>
+    I've seen lots of figures about how much heat the human body produces. You can easily
+    calculate the upper limit based on how much food you eat a day. Say, you eat
+    <span data-key="example-26-0" data-step="50">2,000</span> Calories a day (again, food
+    Calories with a capital "C" are equal to 1,000 calories with a little "c").
+  </p>
+
+  <p class="example">
+    <code id="example-26">
+      (-> (fj <output for="example-26-0">2000</output> :Calories :per :day :to :watts) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 96.91666666666667 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    So, your average power and/or heat output is slightly less than a 100-watt bulb.
+    (Note that your heat is radiated over a much larger area so the temperature is much
+    lower.) Many days I could be replaced entirely with a 100-watt bulb and have no
+    discernible effect on the universe.
+  </p>
+
+  <h2 id="microwave-cookery">Microwave cookery <a href="#microwave-cookery">#</a> <a href="#top">&#8679;</a></h2>
+
+  <p>
+    I'm heating up yummy mustard greens in my microwave, but I don't want to overheat
+    them. I just want to warm them up. If I run my
+    <span data-key="example-27-0" data-step="100">1,100</span> watt microwave for
+    <span data-key="example-27-1">30</span> seconds, how much will their temperature
+    increase? I have a big <span data-key="example-27-2">27</span> ounce (mass) can, and I'll assume that their specific heat
+    is about the same as that of water (1 calorie/gram/degC):
+  </p>
+
+  <p class="example">
+    <code id="example-27">
+      (-> (fj_ (fj <output for="example-27-0">1100</output> :W <output for="example-27-1">30</output> :sec)
+               (fj <output for="example-27-2">27</output> :oz 1 :calorie :per :gram :per :degC))
+          (to :degF) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 18.53509035279376 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    <output for="example-27-1" class="normal">30</output> seconds should raise the
+    temperature by around <output for="example-27">19</output> degrees Fahrenheit,
+    assuming perfect transfer of microwave energy to heat.  Knowing this, I could see how
+    efficiently my microwave actually heats food. I could heat a quantity of water and
+    measure the temperature change in the water. I'll do that sometime if I can find my
+    good thermometer.
+  </p>
+
+  <h2 id="why-is-superman-so-lazy">Why is Superman so Lazy? <a href="#why-is-superman-so-lazy">#</a> <a href="#top">&#8679;</a></h2>
+
+  <p>
+    Superman is always rescuing school buses that are falling off of cliffs, flying to the
+    moon, lifting cars over his head, and generally showing off. So why does he still
+    allow so many accidents to happen? Shouldn't he be able to rescue everybody who has a
+    Volkswagen parked on their chest? While searching for answers, I found out three
+    interesting things about Superman:
+  </p>
+
+  <ol>
+    <li>He's 6 feet 3 inches tall.</li>
+    <li>He weighs 225 pounds.</li>
+    <li>He gets his strength from being charged up with solar energy.</li>
+  </ol>
+
+  <p>
+    This is enough information to find some answers. Frinj has units
+    called <code>:sunpower</code> (the total power radiated by the sun) and
+    <code>:sundist</code> (the distance between the earth and the sun). Thus, we can find
+    the sun's power that strikes an area at the distance of the earth (knowing the surface
+    area of a sphere is 4 pi radius<sup>2</sup>):
+  </p>
+
+  <p class="example">
+    <code id="example-28" data-next="example-29" class="unit">
+      (add-unit! :earthpower (fj_ (fj :sunpower)
+                                  (fj* 4 (fj :pi)
+                                       (fj** (fj :sundist) 2))))
+    </code>
+  </p>
+
+  <p class="example">
+    <code id="example-29">
+      (-> (fj :earthpower) str)
+    </code>
+    <code id="example-30" class="hidden">
+      (-> (fj_ (fj <output for="example-31-0">12</output> :ft :ft) (fj 6.25 :ft)) (to :in) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 1372.5422836662622 kg s^-3 [heat_flux_density]
+    </code>
+  </p>
+
+  <p>
+    This is about <output for="example-29">1,372</output> watts per square meter. Superman
+    is a pretty big guy &mdash; let's say the surface area he can present to the sun is
+    <span data-key="example-31-0">12</span> square feet. (This is probably a bit high
+    &mdash; it makes him an average of <output for="example-30">23</output> inches wide
+    over his entire height.) This allows Superman to charge up at a power of:
+  </p>
+
+  <p class="example">
+    <code id="example-31" data-next="example-32" class="unit">
+      (add-unit! :chargerate (fj :earthpower <output for="example-31-0">12</output> :ft :ft))
+    </code>
+  </p>
+
+  <p class="example">
+    <code id="example-32">
+      (-> (fj :chargerate :to :watts) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 1530.1602081736573 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    Superman thus charges up at the rate of <output for="example-32">1,530</output>
+    joules/sec or <output for="example-32" class="normal">1,530</output> watts. At this
+    rate, how long does he have to charge up before he can lift a
+    <span data-key="example-33-0">2</span> ton truck over his head? (Knowing energy =
+    mass * height * gravity)
+  </p>
+
+  <p class="example">
+    <code id="example-33">
+      (-> (fj <output for="example-33-0">2</output> :ton 7 :feet :gravity :per :chargerate) (to :sec) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 24.80975674997478 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    So, charging up for <output for="example-33">25</output> seconds allows him to save
+    one dumb kid who is acting as a speed bump. So his power is huge but not infinite. He
+    couldn't sustain a higher rate (unless he showed off less by lifting the car only a
+    foot or two). Lifting a truck every 30 seconds or so isn't bad, though. He could be
+    saving a lot more people. So why doesn't he?
+  </p>
+
+  <p>
+    Well, we've all seen the movie. He's using his super-powers to pick up chicks.
+    Literally. Superman decides to take a break from saving lives and takes Lois Lane up
+    in the sky for a joyride. So how long does he have to charge up with solar energy to
+    fly himself and Lois Lane (let's say she weighs
+    <span data-key="example-34-0">135</span> pounds) up to
+    <span data-key="example-34-1" data-step="1000">15,000</span> feet?
+  </p>
+
+  <p class="example">
+    <code id="example-34">
+      (-> (fj (+ 225 <output for="example-34-0">135</output>) :pounds <output for="example-34-1">15000</output> :feet :gravity :per :chargerate) (to :minutes) str)
+    </code>
+    <code id="example-35" class="hidden">
+      (-> (fj_ (fj (+ 225 <output for="example-34-0">135</output>) :pounds <output for="example-34-1">15000</output> :feet :gravity) (fj <output for="example-33-0">2</output> :ton 7 :feet :gravity)) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 79.7456466963475 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    So, Superman has to charge up with solar energy for an hour to cart Lois up there.
+    With the same energy, he could have saved <output for="example-35">193</output>
+    trapped kids. Keep in mind that Lois could do her part, too. If she left her purse
+    behind or didn't weigh as much, he'd have more energy left over to save people. If she
+    would manage to shed just two pounds of cargo weight, Superman would have enough
+    energy to save another kid's life.
+  </p>
+
+  <p>
+    Sure, he's a great guy, and, sure, he's the Defender of Truth, Justice, and the
+    American Way, but can't he find a better use for his super-powers than schlepping some
+    shiksa into the stratosphere? Shovel my walk, he could, in 3 seconds &mdash; and me
+    with the sciatica.
+  </p>
+
+  <h2 id="fart-jokes">Fart jokes <a href="#fart-jokes">#</a> <a href="#top">&#8679;</a></h2>
+
+  <p>
+    "If you fart continuously for 6 years and 9 months, you'll have enough gas to create
+    the equivalent of an atomic bomb." Hee hee. Cute. The Hiroshima bomb had a yield of
+    12.5 kilotons of TNT, which is a very small bomb by today's standards. How many
+    horsepower would that be?
+  </p>
+
+  <p class="inactive">
+    <code id="example-36">
+      (-> (fj_ (fj 12.5 :kilotons :TNT)
+               (fj+ (fj 6 :years) (fj 9 :months)))
+          (to :horsepower) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 329.26013859711395 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    Can you produce a 329-horsepower blowtorch of a fart? I doubt it. That's the power
+    produced by a Corvette engine running just at its melting point. A one-second fart
+    with that much power copuld blow me 1,000 feet straight up. To produce that kind of
+    energy, how much food would you have to eat a day?
+  </p>
+
+  <p class="inactive">
+    <code id="example-37">
+      (-> (fj_ (fj 12.5 :kilotons :TNT)
+               (fj+ (fj 6 :years) (fj 9 :months)))
+          (to :Calories :per :day) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 5066811.55086559 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    Ummm... can you eat over 5 million Calories a day? (Again, note that these are food
+    Calories with a capital 'c' which are equal to 1,000 calories with a small 'c'.) If
+    you were a perfect fart factory, converting food energy into farts with 100%
+    efficiency, and ate a normal 2,000 Calories/day, how many years would it really take?
+  </p>
+
+  <p class="inactive">
+    <code id="example-38">
+      (-> (fj_ (fj 12.5 :kilotons :TNT)
+               (fj 2000 :Calories :per :day))
+          (to :years) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 17100.488984171363 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    17,000 years is still a huge underestimate; I don't know how much of your energy
+    actually goes into fart production. Oh well. To continue the calculations, let's guess
+    your butthole has a diameter of 1 inch (no, you go measure it). Let's also guess that
+    the gas you actually produce in a fart is only 1/10 as combustible as pure natural
+    gas. What would be the velocity of the gas coming out?
+  </p>
+
+  <p class="inactive">
+    <code id="example-40">
+      (-> (fj_ (fj 12.5 :kilotons :TNT)
+               (fj :natural_gas)
+               (fj+ (fj 6 :years) (fj 9 :months))
+               (fj* (fj :pi) (fj** (fj 0.5 :in) 2)))
+          (fj* 10)
+          (to :mph) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 281.5904462031102 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    Nobody likes sitting next to a 280-mile-per-hour fart-machine. Lesson: Even the
+    smallest atomic bombs are really unbelievably powerful and whoever originally
+    calculated this isn't any fun to be around if they really fart that much.
+  </p>
+
+  <h2 id="advanced-farting">Advanced farting <a href="#advanced-farting">#</a> <a href="#top">&#8679;</a></h2>
+
+  <p>
+    What do you think are the most flammable gases in a fart? Most people think it's
+    methane, but I found some medical studies that disprove this. Most people hardly have
+    any methane in their intestines. For example, one study stated that only 4 out of 11
+    people had any detectable methane in their intestines! So what's the rest of the gas?
+  </p>
+
+  <table summary="Gases present in human intestines by volume">
+    <thead>
+      <tr><th>Gas</th><th>Percent by volume</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Nitrogen</td><td>64%</td></tr>
+      <tr><td>Carbon Dioxide</td><td>14%</td></tr>
+      <tr><td>Hydrogen</td><td>19%</td></tr>
+      <tr><td>Methane</td><td>3.2%</td></tr>
+      <tr><td>Oxygen</td><td>0.7%</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    These studies also note that the average person has 100 milliliters of gas is present
+    in their intestinal tract at any given time. The average person expels 400-2,000 ml of
+    gas daily (and I'm not talking about through the mouth and nose).
+  </p>
+
+  <p>
+    Okay, that's almost enough information to figure out available fart energy. Now all we
+    need to know is the energy of combustion of the flammable gases. Of the above, only
+    hydrogen and methane are readily combustible. Looking up their energies of combustion:
+  </p>
+
+  <table summary="Combustion energy of gases in human intestine">
+    <thead>
+      <tr><th>Gas</th><th>Energy of combustion in kJ/mol</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Hydrogen (H2)</td><td>295.8</td></tr>
+      <tr><td>Methan (CH4)</td><td>890.8</td></tr>
+    </tbody>
+  </table>
+
+  <p>
+    Okay, that's plenty enough information to find out how much energy is released in a
+    day of farting! Say you're on the farty end of the scale, and you produce
+    <span data-key="example-41-0" data-step="100">2,000</span> ml of gas each day.
+  </p>
+
+  <p>
+    Note that the energies above are given in kJ/mol, but we have volumes in milliliters.
+    As you may have learned in chemistry class, a mole of any gas at standard temperature
+    and pressure takes up the same volume. Frinj knows this as <code>:molarvolume</code>.
+  </p>
+
+  <p>
+    The total energy in the hydrogen (keeping in mind that hydrogen makes up 19% of the
+    <output for="example-41-0">2,000</output> ml volume) is given by:
+  </p>
+
+  <p class="example">
+    <code id="example-41" data-next="example-42" class="unit">
+      (add-unit! :h2energy (fj <output for="example-41-0">2000</output> :ml :per :molarvolume 19 :percent 285.8 :kJ :per :mol))
+    </code>
+    <code id="example-42" data-next="example-45" class="hidden">
+      (-> (fj :h2energy :to :joules) str)
+    </code>
+  </p>
+
+  <p>
+    The combustible hydrogen thus produces <output for="example-42">4,845</output> joules
+    (per day). Now, for the methane, which makes a smaller percentage, but releases more
+    energy per mole:
+  </p>
+
+  <p class="example">
+    <code id="example-43" data-next="example-44" class="unit">
+      (add-unit! :methaneenergy (fj <output for="example-41-0">2000</output> :ml :per :molarvolume 3.2 :percent 890.8 :kJ :per :mol))
+    </code>
+    <code id="example-44" data-next="example-45" class="hidden">
+      (-> (fj :methaneenergy :to :joules) str)
+    </code>
+  </p>
+
+  <p>
+    The energy in the combustible methane is thus <output for="example-44">2,544</output>
+    joules (per day), about half the energy produced from the hydrogen. Thus, the grand
+    total of energy produced by combustible farts by a farty person in a day, in food
+    Calories (with a capital C, remember &mdash; these are what a physicist would call a
+    kilocalorie) is:
+  </p>
+
+  <p class="example">
+    <code id="example-45" data-next="example-46">
+      (-> (fj+ (fj :methaneenergy) (fj :h2energy)) (to :Calories) str)
+    </code>
+    <code id="example-46" data-next="example-47" class="hidden">
+      (-> (fj :h2energy :to :Calories) str)
+    </code>
+    <code id="example-47" data-next="example-48" class="hidden">
+      (-> (fj :methaneenergy :to :Calories) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 1.7648151669360923 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    Which gives a result of about <output for="example-45" data-dp="2">1.76</output>
+    Calories/day of energy available from burning your farts. (About
+    <output for="example-46" data-dp="2">1.16</output> Calories from hydrogen, and about
+    <output for="example-47" data-dp="2">0.60</output> Calories from methane.)  This is
+    out of the <output for="example-41-0">2,000</output> Calories that an average person
+    eats a day. Or, one part in about 1,133 of the energy in the food you eat is available
+    in fart energy, (again, for a gassy person).
+  </p>
+
+  <p>
+    Thus, a good estimate to the problem stated above is that a real (gassy) human would
+    need to save their farts for:
+  </p>
+
+  <p class="inactive">
+    <code id="example-48">
+      (-> (fj_ (fj 12.5 :kilotons :TNT)
+               (fj_ (fj+ (fj :methaneenergy) (fj :h2energy)) (fj :day)))
+          (to :days) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 7.078157887380842E9 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    or about 7 billion years to make the equivalent of the energy in a (small) atomic
+    bomb!
+  </p>
+
+  <h2 id="incorrect-facts">Incorrect facts <a href="#incorrect-facts">#</a> <a href="#top">&#8679;</a></h2>
+
+  <h3 id="qe2">QE2 <a href="#qe2">#</a></h3>
+
+  <blockquote>
+    The cruise liner, Queen Elizabeth II, moves only six inches for each gallon of diesel
+    that it burns.
+  </blockquote>
+
+  <p>
+    From <a href="http://news.bbc.co.uk/1/hi/uk/319027.stm">a page of facts about the
+    QE2</a>, we find that the ship consumes <span data-key="example-49-0">18</span> tons
+    of fuel per hour at a service speed of <span data-key="example-49-1">28</span> knots.
+    By legislation in many areas, diesel fuel must have a density no higher than
+    0.85 kg/liter (if it were watered down, it would be higher).
+  </p>
+
+  <p class="example">
+    <code id="example-49">
+      (-> (fj_ (fj <output for="example-49-0">18</output> :tons)
+               (fj :hour)
+               (fj <output for="example-49-1">28</output> :knot)
+               (fj 0.85 :kg :per :liter))
+          (to :feet :per :gallon) str)
+    </code>
+    <code id="example-50" class="hidden">
+      (-> (fj_ (fj <output for="example-49-0">18</output> :tons)
+               (fj :hour)
+               (fj <output for="example-49-1">28</output> :knot)
+               (fj 0.85 :kg :per :liter))
+          (to :gallon :per :mile) str)
+    </code>
+    <code id="example-51" class="hidden">
+      (-> (fj_ (fj <output for="example-49-0">18</output> :tons)
+               (fj :hour)
+               (fj <output for="example-49-1">28</output> :knot)
+               (fj 0.85 :kg :per :liter)
+               2)
+          (to :feet :per :gallon) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 33.52338503156235 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    They're very, very wrong. It actually travels about
+    <output for="example-49" data-dp="1">33.5</output> feet per gallon, or
+    <output for="example-50">157</output> gallons/mile. They're only off by a
+    factor of <output for="example-51">67</output>. Still not great gas mileage, though.
+  </p>
+
+  <h3 id="hamburgers-and-cars">Hamburgers and cars <a href="#hamburgers-and-cars">#</a></h3>
+
+  <blockquote>
+    Pound for pound, hamburgers cost more than new cars.
+  </blockquote>
+
+  <p>
+    Let's see... let's try with a medium-expensive, light car. A 2001 Corvette Z06 weighs
+    <span data-key="example-52-0" data-step="5">3,115</span> pounds and costs
+    $<span data-key="example-52-1" data-step="5">48,055</span>.
+  </p>
+
+  <p class="example">
+    <code id="example-52">
+      (-> (fj_ (fj <output for="example-52-1">48055</output> :dollars)
+               (fj <output for="example-52-0">3115</output> :lb))
+          (to :dollars :per :lb) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 15.42696629213483 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    I know I don't pay $<output for="example-52">15</output>/lb for hamburger.
+  </p>
+
+  <h3 id="biblical-references">Biblical references <a href="#biblical-references">#</a></h3>
+
+  <p>
+    So you want to build an ark, do you? And not an Ark of the Covenant, but the boat.
+    How bad was that flood?
+  </p>
+
+  <p>
+    The bible is also quite precise in its measurement of the flood. Genesis 7:19-20
+    states that "And the waters prevailed exceedingly upon the earth; and all the
+    mountains, that were under the whole heaven, were covered. Fifteen cubits upward did
+    the waters prevail; and the mountains were covered."
+  </p>
+
+  <p>
+    Okay, so the highest mountains of the earth were covered, plus an extra
+    <span data-key="example-53-0">15</span> cubits (approx
+    <output for="example-54">27</output> feet) for good measure. The current measurements
+    for highest mountain is Mt. Everest at 29,030.8 feet (according to the highly dubious
+    and utterly non-trustable 2002 Guinness Book of World Records.) I know that Everest is
+    growing slowly, (best estimates are 2.4 inches/year) so we'll discount for that.
+  </p>
+
+  <p class="example">
+    <code id="example-53" data-next="example-55" class="unit">
+      (add-unit! :depth (fj+ (fj 29030 :feet)
+                             (fj <output for="example-53-0">15</output> :biblicalcubits)
+                             (fj -2.4 :inches :per :year 4000 :years)))
+    </code>
+    <code id="example-54" class="hidden">
+      (-> (fj <output for="example-53-0">15</output> :biblicalcubits :to :feet) str)
+    </code>
+    <code id="example-55" data-next="example-56" class="hidden">
+      (-> (fj :depth :to :feet) str)
+    </code>
+  </p>
+
+  <p>
+    About <output for="example-55">28,257</output> feet of water. This was deposited over
+    <span data-key="example-56-0">40</span> days. The rainfall was thus:
+  </p>
+
+  <p class="example">
+    <code id="example-56">
+      (-> (fj_ (fj :depth) (fj <output for="example-56-0">40</output> :days))
+          (to :feet :per :hour) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 29.434635416666666 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    About <output for="example-56">29</output> feet/hour. A good rain around here is about
+    an inch an hour.  The very rainiest places on earth like Cherrapunji get about this
+    much rain in a year.  (I'm campaigning Colorado farmers to sin a bit more...)
+  </p>
+
+  <h3 id="emc2">E=mc<sup>2</sup> <a href="#emc2">#</a></h3>
+
+  <p>
+    Everyone knows Einstein's E=mc<sup>2</sup> equation, but to apply it is often very
+    difficult because the units come out so strange. Let's see, I have mass in pounds, and
+    the speed of light is 186,282 miles/second... ummm... what does that come out to? In
+    Frinj the calculation becomes transparently simple.
+  </p>
+
+  <p>
+    If you took the matter in a teaspoon of water, and converted that to energy, how many gallons
+    of gasoline would that equal?
+  </p>
+
+  <p class="example">
+    <code id="example-57">
+      (-> (fj :teaspoon :water :c :c) (to :gallons :gasoline) str)
+    </code>
+    <br>
+    <code class="result">
+      ;; 3164209.862836101 [dimensionless]
+    </code>
+  </p>
+
+  <p>
+    Unbelievable. The energy in a teaspoon of water, if we could extract it, is equal to
+    burning more than 3 million gallons of gasoline.
+  </p>
+</body>

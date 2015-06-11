@@ -29,6 +29,10 @@ user=> (fj 2000 :Calories :per :day :to :watts)
 
 There are a few differences when running Frinj on Node / in a browser. See [this wiki page](https://github.com/martintrojer/frinj/wiki/ClojureScript) for details.
 
+#### Browser demo
+
+To generate the browser demo, run `lein cljsbuild once`. Then start a web server in the [browser-example](browser-example) directory, and visit it. You should see the examples page.
+
 ## Examples
 
 * See [example calculations](https://github.com/martintrojer/frinj/blob/master/examples/examples.clj) for ideas...

@@ -1,0 +1,104 @@
+body {
+  margin: 1rem auto;
+  padding: 0 15rem;
+  position: relative;
+  max-width: 50rem;
+}
+
+p {
+  line-height: 1.3em;
+}
+
+h2 a {
+  font-size: small;
+}
+
+nav {
+  border-right: 0.1rem solid black;
+  left: 0;
+  margin: 3rem 0.5rem 0 0;
+  padding: 0 0.5rem;
+  position: absolute;
+  text-align: right;
+  width: 13.5rem;
+}
+
+nav ol {
+  margin: 0;
+  padding-left: 0;
+}
+
+nav li {
+  margin-left: 0;
+  list-style-type: none;
+}
+
+nav li ol {
+  border-right: 0.1rem solid black;
+  margin-top: 0.3rem;
+  padding-right: 0.5rem;
+}
+
+blockquote:before {
+  content: '\201C';
+}
+
+blockquote:after {
+  content: '\201D';
+}
+
+aside {
+  border-left: 0.1rem solid black;
+  font-size: smaller;
+  margin: 0 0 0 0.5rem;
+  padding: 0.2rem;
+  position: absolute;
+  right: 0;
+  width: 14rem;
+}
+
+[data-scrub-orientation] {
+  border-bottom: 1px dashed black;
+  cursor: col-resize;
+}
+
+output {
+  font-weight: bold;
+}
+
+code output, output.normal {
+  font-weight: normal;
+}
+
+.inactive {
+  background: #f4f4f4;
+}
+
+.result {
+  font-style: italic;
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 50rem) {
+  body {
+    padding: 0;
+  }
+
+  aside, nav {
+    margin: 0 2rem;
+    position: relative;
+    width: auto;
+  }
+
+  nav, nav li ol {
+    border: none;
+    text-align: center;
+  }
+
+  nav li {
+    display: inline;
+  }
+}
